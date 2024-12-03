@@ -48,7 +48,9 @@ export const addCourseSubCategory = (data) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 // to all get Subcategory in dataTable
@@ -102,7 +104,9 @@ export const updateCourseSubCategoryEdit =
           error: resData.message || "An unknown error occurred",
         };
       }
-    } catch (error) {}
+    } catch (error) {
+      throw error;
+    }
   };
 
 //category creation
@@ -128,7 +132,9 @@ export const addCourseCategory = (data) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 //get all category at datatable
 export const getAllCourseCategory = () => async (dispatch) => {
@@ -179,7 +185,9 @@ export const updateCourseCategory = (id, category) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 //course creation
 export const addCourse = (data) => async (dispatch) => {
@@ -204,7 +212,9 @@ export const addCourse = (data) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 //get all course at datatable
@@ -257,7 +267,9 @@ export const updateCourse = (id, course) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 //add course content
@@ -282,7 +294,9 @@ export const addCourseContent = (formData) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 //get all content
 export const getAllContent = (id) => async (dispatch) => {
@@ -337,7 +351,9 @@ export const updateCourseContent = (id, formData) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 //add material
 export const addCourseMaterial = (formData) => async (dispatch) => {
@@ -361,7 +377,9 @@ export const addCourseMaterial = (formData) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 //get all material
@@ -417,7 +435,9 @@ export const updateCourseMaterial = (id, formData) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 // to createSubcategory
 export const addCourseFee = (data) => async (dispatch) => {
@@ -441,7 +461,9 @@ export const addCourseFee = (data) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const getCourseFee = (id) => async (dispatch) => {
@@ -491,5 +513,7 @@ export const updateCourseFee = (id, fees) => async (dispatch) => {
         error: resData.message || "An unknown error occurred",
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };

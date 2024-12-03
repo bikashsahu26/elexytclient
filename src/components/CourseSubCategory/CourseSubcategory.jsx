@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
 import Navbar from "../Navbar/Navbar";
+import Swal from "sweetalert2";
 
 const CourseSubcategory = () => {
   //   const token = localStorage.getItem("token");
@@ -87,24 +88,100 @@ const CourseSubcategory = () => {
     currentPage * rowsPerPage
   );
 
+  // const handleSubcategorySubmit = (e) => {
+  //   e.preventDefault();
+  //   if (onEditing) {
+  //     dispatch(
+  //       updateCourseSubCategoryEdit(editSubCategory.id, courseSubCategory)
+  //     ).then(() => {
+  //       handleClose();
+  //       dispatch(getCourseSubCategory());
+  //       setonEditing(false);
+  //       setcourseSubCategory("");
+  //     });
+  //   } else {
+  //     dispatch(addCourseSubCategory(courseSubCategory)).then(() => {
+  //       dispatch(getCourseSubCategory());
+  //       setShow(false);
+  //       setcourseSubCategory("");
+  //     });
+  //   }
+  // };
   const handleSubcategorySubmit = (e) => {
     e.preventDefault();
-    if (onEditing) {
-      dispatch(
-        updateCourseSubCategoryEdit(editSubCategory.id, courseSubCategory)
-      ).then(() => {
-        handleClose();
-        dispatch(getCourseSubCategory());
-        setonEditing(false);
-        setcourseSubCategory("");
-      });
-    } else {
-      dispatch(addCourseSubCategory(courseSubCategory)).then(() => {
-        dispatch(getCourseSubCategory());
-        setShow(false);
-        setcourseSubCategory("");
-      });
-    }
+
+    const actionMessage = onEditing ? "update" : "add";
+    const actionTitle = onEditing
+      ? "Are you sure you want to update this subcategory?"
+      : "Are you sure you want to add this subcategory?";
+    const successMessage = onEditing
+      ? "Subcategory updated successfully."
+      : "Subcategory added successfully.";
+    const errorMessage = onEditing
+      ? "There was an error updating the subcategory."
+      : "There was an error adding the subcategory.";
+
+    Swal.fire({
+      title: "Are you sure?",
+      html: actionTitle,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${actionMessage} it!`,
+      cancelButtonText: "No, cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (onEditing) {
+          dispatch(
+            updateCourseSubCategoryEdit(editSubCategory.id, courseSubCategory)
+          )
+            .then(() => {
+              handleClose();
+              dispatch(getCourseSubCategory());
+              setonEditing(false);
+              setcourseSubCategory("");
+              Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: successMessage,
+                timer: 4000,
+                showConfirmButton: false,
+              });
+            })
+            .catch((error) => {
+              Swal.fire({
+                title: "Error!",
+                text: errorMessage,
+                icon: "error",
+                confirmButtonText: "OK",
+              });
+            });
+        } else {
+          dispatch(addCourseSubCategory(courseSubCategory))
+            .then(() => {
+              dispatch(getCourseSubCategory());
+              setShow(false);
+              setcourseSubCategory("");
+              Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: successMessage,
+                timer: 4000,
+                showConfirmButton: false,
+              });
+            })
+            .catch((error) => {
+              Swal.fire({
+                title: "Error!",
+                text: errorMessage,
+                icon: "error",
+                confirmButtonText: "OK",
+              });
+            });
+        }
+      }
+    });
   };
 
   const handelfetchSubCourse = (row) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./Course.css";
 
@@ -29,6 +29,7 @@ import { FaEdit, FaFileAlt, FaPause } from "react-icons/fa";
 import ReactPlayer from "react-player";
 import Swal from "sweetalert2";
 import { IoIosFastforward, IoIosRewind, IoMdPlay } from "react-icons/io";
+import JoditEditor from "jodit-react";
 
 const Course = () => {
   const dispatch = useDispatch();
@@ -63,7 +64,31 @@ const Course = () => {
     thumbnail: "",
     description: "",
   });
+
+  // Reference for Thumbnail
   const thumbnailInputRef = useRef(null);
+
+  const handleResetThumbnailfield = () => {
+    // Reset the file input field manually using the ref
+    if (thumbnailInputRef.current) {
+      thumbnailInputRef.current.value = ""; // Clear the file input
+    }
+  };
+
+  // for JoditEditor ref and  states
+  const editor = useRef(null);
+  const config = useMemo(
+    () => ({
+      readonly: false,
+
+      showCharsCounter: false, // Hides the characters counter
+      showWordsCounter: false, // Hides the word counter
+      showPoweredBy: false, // Hides the "Powered by Jodit" footer
+      statusbar: false, // Hides the entire status bar
+      toolbar: true, // Keep toolbar visible
+    }),
+    []
+  );
 
   useEffect(() => {
     dispatch(getAllCourse());
@@ -148,8 +173,7 @@ const Course = () => {
     } else if (
       name === "courseName" ||
       name === "courseDesc" ||
-      name === "creator" ||
-      name === "description"
+      name === "creator"
     ) {
       let trimmedValue = value.replace(/^\s+/, ""); // Remove leading spaces
       trimmedValue = trimmedValue.replace(/\s+$/, ""); // Remove all trailing spaces
@@ -215,8 +239,21 @@ const Course = () => {
   //     if (result.isConfirmed) {
   //       handleShow();
 
+  //       const formData = new FormData();
+  //       if (course.thumbnail) {
+  //         formData.append("file", course.thumbnail);
+  //       }
+
+  //       // formData.append("file", course.thumbnail);
+  //       formData.append(
+  //         "courseDto",
+  //         new Blob([JSON.stringify(course)], {
+  //           type: "application/json",
+  //         })
+  //       );
+
   //       if (onEditing) {
-  //         dispatch(updateCourse(fetchCourse.id, course))
+  //         dispatch(updateCourse(fetchCourse.id, formData))
   //           .then(() => {
   //             Swal.fire({
   //               title: "Updated!",
@@ -227,6 +264,7 @@ const Course = () => {
   //               dispatch(getAllCourse());
   //               setonEditing(false);
   //               setcourse("");
+  //               handleResetThumbnailfield();
   //             });
   //           })
   //           .catch(() => {
@@ -237,7 +275,7 @@ const Course = () => {
   //             });
   //           });
   //       } else {
-  //         dispatch(addCourse(course))
+  //         dispatch(addCourse(formData))
   //           .then(() => {
   //             Swal.fire({
   //               title: "Added!",
@@ -246,6 +284,7 @@ const Course = () => {
   //             }).then(() => {
   //               dispatch(getAllCourse());
   //               setShow(false);
+  //               handleResetThumbnailfield();
   //             });
   //           })
   //           .catch(() => {
@@ -265,20 +304,29 @@ const Course = () => {
   //     }
   //   });
   // };
-
   const handleCourseSubmit = (e) => {
     e.preventDefault();
 
+    const actionMessage = onEditing ? "update" : "add";
+    const actionTitle = onEditing
+      ? "Are you sure you want to update this course?"
+      : "Are you sure you want to add this course?";
+    const successMessage = onEditing
+      ? "Course updated successfully."
+      : "Course added successfully.";
+    const errorMessage = onEditing
+      ? "There was an error updating the course."
+      : "There was an error adding the course.";
+
     Swal.fire({
       title: "Are you sure?",
-      text: onEditing
-        ? "You want to update the course?"
-        : "Are you sure you want to add this course?",
+      text: actionTitle,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: onEditing ? "Yes, update it!" : "Yes, add it!",
+      confirmButtonText: `Yes, ${actionMessage} it!`,
+      cancelButtonText: "No, cancel",
     }).then((result) => {
       if (result.isConfirmed) {
         handleShow();
@@ -288,12 +336,9 @@ const Course = () => {
           formData.append("file", course.thumbnail);
         }
 
-        // formData.append("file", course.thumbnail);
         formData.append(
           "courseDto",
-          new Blob([JSON.stringify(course)], {
-            type: "application/json",
-          })
+          new Blob([JSON.stringify(course)], { type: "application/json" })
         );
 
         if (onEditing) {
@@ -301,20 +346,24 @@ const Course = () => {
             .then(() => {
               Swal.fire({
                 title: "Updated!",
-                text: "Your course has been updated.",
+                text: successMessage,
                 icon: "success",
+                timer: 4000,
+                showConfirmButton: false,
               }).then(() => {
                 handleClose();
                 dispatch(getAllCourse());
                 setonEditing(false);
                 setcourse("");
+                handleResetThumbnailfield();
               });
             })
-            .catch(() => {
+            .catch((error) => {
               Swal.fire({
                 title: "Error!",
-                text: "There was an error updating the course. Please try again.",
+                text: errorMessage,
                 icon: "error",
+                confirmButtonText: "OK",
               });
             });
         } else {
@@ -322,18 +371,22 @@ const Course = () => {
             .then(() => {
               Swal.fire({
                 title: "Added!",
-                text: "Your course has been added successfully.",
+                text: successMessage,
                 icon: "success",
+                timer: 4000,
+                showConfirmButton: false,
               }).then(() => {
                 dispatch(getAllCourse());
                 setShow(false);
+                handleResetThumbnailfield();
               });
             })
-            .catch(() => {
+            .catch((error) => {
               Swal.fire({
                 title: "Error!",
-                text: "There was an error adding the course. Please try again.",
+                text: errorMessage,
                 icon: "error",
+                confirmButtonText: "OK",
               });
             });
         }
@@ -342,6 +395,8 @@ const Course = () => {
           title: "Cancelled",
           text: "No changes were made.",
           icon: "info",
+          timer: 3000,
+          showConfirmButton: false,
         });
       }
     });
@@ -774,7 +829,7 @@ const Course = () => {
                 handleResetMaterialfield();
               });
             })
-            .catch(() => {
+            .catch((error) => {
               Swal.fire({
                 title: "Error!",
                 text: "There was an error updating the material. Please try again.",
@@ -845,16 +900,23 @@ const Course = () => {
   }, [selectedCourseFee]);
 
   useEffect(() => {
-    if (
-      courseFee &&
-      courseFee.courseId &&
-      courseFee.courseId !== prevCourseId
-    ) {
-      // Fetch the course fee only if courseId is different
+    if (courseFee.courseId && courseFee.courseId !== prevCourseId) {
       dispatch(getCourseFee(courseFee.courseId));
       setPrevCourseId(courseFee.courseId);
     }
-  }, [courseFee.courseId, prevCourseId, courseFee, dispatch]);
+  }, [courseFee.courseId, prevCourseId, dispatch]);
+
+  useEffect(() => {
+    if (fetchFeeById) {
+      setCourseFee((prevData) => ({
+        ...prevData,
+        courseId: fetchFeeById.courseId || "",
+        courseFeeId: fetchFeeById.courseFeeId || "",
+        courseFee: fetchFeeById.courseFee || "",
+        courseSubscriptionPeriod: fetchFeeById.courseSubscriptionPeriod || "",
+      }));
+    }
+  }, [fetchFeeById]);
 
   // useEffect(() => {
   //   if (courseFee && courseFee.courseId) {
@@ -868,25 +930,37 @@ const Course = () => {
     setCourseFee("");
   };
 
-  const handelfetchFee = (courseId) => {
-    dispatch(getCourseFeeById(courseId)).then(() => {
-      if (fetchFeeById) {
-        setCourseFee((prevData) => ({
-          ...prevData,
-          courseId: fetchFeeById.courseId || "",
-          courseFeeId: fetchFeeById.courseFeeId || "",
-          courseFee: fetchFeeById.courseFee || "",
-          courseSubscriptionPeriod: fetchFeeById.courseSubscriptionPeriod || "",
-        }));
-        setonEditing(true);
-        setshowFeeModal(true);
-      }
-    });
-  };
+  // const handelfetchFee = (courseId) => {
+  //   dispatch(getCourseFeeById(courseId)).then(() => {
+  //     if (fetchFeeById) {
+  //       setCourseFee((prevData) => ({
+  //         ...prevData,
+  //         courseId: fetchFeeById.courseId || "",
+  //         courseFeeId: fetchFeeById.courseFeeId || "",
+  //         courseFee: fetchFeeById.courseFee || "",
+  //         courseSubscriptionPeriod: fetchFeeById.courseSubscriptionPeriod || "",
+  //       }));
+  //       setonEditing(true);
+  //       setshowFeeModal(true);
+  //     }
+  //   });
+  // };
 
+  const handelfetchFee = (courseId) => {
+    if (courseId) {
+      setonEditing(true);
+      setshowFeeModal(true);
+      dispatch(getCourseFeeById(courseId));
+    }
+  };
   const handleInputFeeChange = (e) => {
     const { name, value } = e.target;
-    setCourseFee({ ...courseFee, [name]: value });
+    // setCourseFee({ ...courseFee, [name]: value });
+
+    setCourseFee((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   // const handleInputFeeChange = (e) => {
@@ -1037,20 +1111,20 @@ const Course = () => {
                   >
                     Fees
                   </button>
-                  <li className="nav-item ms-auto">
-                    <button
-                      className="nav-link"
-                      id="nav-all-details-tab"
-                      data-bs-toggle="tab"
-                      data-bs-target="#nav-all-details"
-                      type="button"
-                      role="tab"
-                      aria-controls="nav-all-details"
-                      aria-selected="false"
-                    >
-                      Preview
-                    </button>
-                  </li>
+                  {/* <li className="nav-item ms-auto"> */}
+                  <button
+                    className="nav-link"
+                    id="nav-all-details-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-all-details"
+                    type="button"
+                    role="tab"
+                    aria-controls="nav-all-details"
+                    aria-selected="false"
+                  >
+                    Preview
+                  </button>
+                  {/* </li> */}
                 </div>
               </nav>
 
@@ -1486,8 +1560,17 @@ const Course = () => {
               <div className="modal-header">
                 <h5 className="modal-title text-primary">
                   <b>
-                    {onEditing ? "Update Course Content" : "Add Course Content"}
+                    {onEditing
+                      ? `Update ${
+                          selectedCourseContent?.courseName || "Course"
+                        } Content`
+                      : `Add ${
+                          selectedCourseContent?.courseName || "Course"
+                        } Content`}
                   </b>
+                  {/* <b>
+                    {onEditing ? "Update Course Content" : "Add Course Content"}
+                  </b> */}
                 </h5>
                 <button
                   type="button"
@@ -1498,17 +1581,12 @@ const Course = () => {
               <div className="modal-body">
                 <form onSubmit={handleSubmitContent}>
                   <div className="row g-3">
-                    <div className="col-md-6">
+                    {/* <div className="col-md-6">
                       <label htmlFor="courseId" className="form-label">
                         <b> Course Name</b>
                       </label>
                       <div>
-                        {/* Hidden input for courseId, passed to backend */}
-                        <input
-                          type="hidden"
-                          name="courseId"
-                          value={courseContent.courseId || ""}
-                        />
+                        
                         <select
                           name="courseId"
                           value={courseContent.courseId || ""}
@@ -1524,9 +1602,15 @@ const Course = () => {
                           </option>
                         </select>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="col-md-6">
+                      {/* Hidden input for courseId, passed to backend */}
+                      <input
+                        type="hidden"
+                        name="courseId"
+                        value={courseContent.courseId || ""}
+                      />
                       <label htmlFor="contentName" className="form-label">
                         <b>Name</b>
                       </label>
@@ -1540,8 +1624,6 @@ const Course = () => {
                         required
                       />
                     </div>
-                  </div>
-                  <div className="row g-3">
                     <div className="col-md-6">
                       <label htmlFor="contentType" className="form-label">
                         <b>Type</b>
@@ -1560,6 +1642,8 @@ const Course = () => {
                         <option value="avchd">AVCHD</option>
                       </select>
                     </div>
+                  </div>
+                  <div className="row g-3">
                     <div className="col-md-6">
                       <label htmlFor="contentDuration" className="form-label">
                         <b>Duration</b>
@@ -1574,21 +1658,21 @@ const Course = () => {
                         required
                       />
                     </div>
-                  </div>
-                  <div className="row g-3">
-                    <div className="mb-3">
-                      <label htmlFor="file" className="form-label">
-                        <b>Upload File</b>
-                      </label>
-                      <input
-                        ref={contentInputRef}
-                        className="form-control"
-                        type="file"
-                        onChange={handleInputChangeContent}
-                        name="file"
-                        id="file"
-                        required
-                      />
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label htmlFor="file" className="form-label">
+                          <b>Upload File</b>
+                        </label>
+                        <input
+                          ref={contentInputRef || ""}
+                          className="form-control"
+                          type="file"
+                          onChange={handleInputChangeContent}
+                          name="file"
+                          id="file"
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="text-center">
@@ -1721,7 +1805,7 @@ const Course = () => {
                       <input
                         className="form-control"
                         type="file"
-                        ref={thumbnailInputRef}
+                        ref={thumbnailInputRef || ""}
                         name="thumbnail"
                         id="thumbnail"
                         // value={course.thumbnail || ""}
@@ -1770,17 +1854,35 @@ const Course = () => {
                   </div>
                   <div className="row g-3">
                     <div className="form-group col-md-12 ">
-                      <label htmlFor="creator">
+                      <label htmlFor="description">
                         <b>Description</b>
                       </label>
-                      <textarea
+                      <JoditEditor
+                        value={course.description || ""}
+                        name="description"
+                        id="description"
+                        onChange={(newContent) =>
+                          setcourse({ ...course, description: newContent })
+                        }
+                        ref={editor}
+                        config={config}
+                        // config={{
+                        //   showCharsCounter: false, // Hides the characters counter
+                        //   showWordsCounter: false, // Hides the word counter
+                        //   showPoweredBy: false, // Hides the "Powered by Jodit" footer
+                        //   statusbar: false, // Hides the entire status bar
+                        //   toolbar: true, // Keep toolbar visible
+                        //   readonly: false,
+                        // }}
+                      />
+                      {/* <textarea
                         className="form-control"
                         name="description"
                         id="description"
                         value={course.description || ""}
                         onChange={handleInputChange}
                         required
-                      />
+                      /> */}
                     </div>
                   </div>
                   <br />
@@ -1807,9 +1909,18 @@ const Course = () => {
                 <h5 className="modal-title text-primary">
                   <b>
                     {onEditing
+                      ? `Update ${
+                          selectedCourseData?.courseName || "Course"
+                        } Material`
+                      : `Add ${
+                          selectedCourseData?.courseName || "Course"
+                        } Material`}
+                  </b>
+                  {/* <b>
+                    {onEditing
                       ? "Update Course Material"
                       : "Add Course Material"}
-                  </b>
+                  </b> */}
                 </h5>
                 <button
                   type="button"
@@ -1821,35 +1932,15 @@ const Course = () => {
                 {/*---------------------------- form inputs--------------- */}
                 <form onSubmit={handleMaterialSubmit}>
                   <div className="row g-3">
-                    <div className="col-md-6">
-                      <label htmlFor="courseId" className="form-label">
-                        <b> Course Name</b>
-                      </label>
-                      <div>
-                        {/* Hidden input for courseId, passed to backend */}
-                        <input
-                          type="hidden"
-                          name="courseId"
-                          value={courseDocument.courseId || ""}
-                        />
-                        <select
-                          name="courseId"
-                          value={courseDocument.courseId || ""}
-                          id="courseId"
-                          className="form-select"
-                          disabled
-                          required
-                        >
-                          <option value={courseDocument.courseId || ""}>
-                            {selectedCourseData
-                              ? selectedCourseData.courseName
-                              : "Choose..."}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
+                    <div className="col-md-4">
+                      {/* Hidden input for courseId, passed to backend */}
 
-                    <div className="col-md-6">
+                      <input
+                        type="hidden"
+                        name="courseId"
+                        value={courseDocument.courseId || ""}
+                      />
+
                       <label htmlFor="documentName" className="form-label">
                         <b>Name</b>
                       </label>
@@ -1863,9 +1954,8 @@ const Course = () => {
                         required
                       />
                     </div>
-                  </div>
-                  <div className="row g-3">
-                    <div className="col-md-6">
+                    {/* <div className="row g-3"> */}
+                    <div className="col-md-4">
                       <label htmlFor="documentType" className="form-label">
                         <b>Type</b>
                       </label>
@@ -1886,7 +1976,7 @@ const Course = () => {
                         <option value="doc">Word.doc</option>
                       </select>
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                       <label htmlFor="file" className="form-label">
                         <b>Upload Material</b>{" "}
                       </label>
@@ -1901,6 +1991,7 @@ const Course = () => {
                         required
                       />
                     </div>
+                    {/* </div> */}
                   </div>
 
                   <div className="text-center">
@@ -1920,11 +2011,18 @@ const Course = () => {
           tabIndex="-1"
           role="dialog"
         >
-          <div className="modal-dialog modal-lg">
+          <div className="modal-dialog ">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title text-primary">
-                  <b>{onEditing ? "Update Course Fees" : "Add Course Fees"}</b>
+                  {/* <b>{onEditing ? "Update Course Fees" : "Add Course Fees"}</b> */}
+                  <b>
+                    {onEditing
+                      ? `Update ${
+                          selectedCourseFee?.courseName || "Course"
+                        } Fees`
+                      : `Add ${selectedCourseFee?.courseName || "Course"} Fees`}
+                  </b>
                 </h5>
 
                 <button
@@ -1939,20 +2037,14 @@ const Course = () => {
 
                 <form onSubmit={handleFeeSubmit}>
                   <div className="row g-3">
-                    <div className="col-md-4">
+                    {/* <div className="col-md">
                       <label htmlFor="courseId" className="form-label">
                         <b> Course Name</b>
                       </label>
 
                       <div>
-                        {/* Hidden input for courseId, passed to backend */}
 
-                        <input
-                          type="hidden"
-                          name="courseId"
-                          value={courseFee.courseId || ""}
-                        />
-
+                        
                         <select
                           name="courseId"
                           value={courseFee.courseId || ""}
@@ -1968,9 +2060,16 @@ const Course = () => {
                           </option>
                         </select>
                       </div>
-                    </div>
+                    </div> */}
 
-                    <div className="col-md-4">
+                    <div className="col-md-6">
+                      {/* Hidden input for courseId, passed to backend */}
+
+                      <input
+                        type="hidden"
+                        name="courseId"
+                        value={courseFee.courseId || ""}
+                      />
                       <label htmlFor="courseFee" className="form-label">
                         <b>Fees</b>
                       </label>
@@ -1988,12 +2087,12 @@ const Course = () => {
                       />
                     </div>
 
-                    <div className="col-md-4">
+                    <div className="col-md-6">
                       <label
                         htmlFor="courseSubscriptionPeriod"
                         className="form-label"
                       >
-                        <b>Suscription Period</b>
+                        <b>Subscription Period</b>
                       </label>
 
                       <input

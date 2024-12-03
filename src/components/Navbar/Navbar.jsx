@@ -13,6 +13,7 @@ const Navbar = () => {
         <a href="/course">Course</a>
         <a href="/courseCategory">Category</a>
         <a href="/courseSubcategory">SubCategory</a>
+        <a href="/education">Education</a>
       </div>
 
       <div className="d-flex ms-auto">

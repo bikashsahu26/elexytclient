@@ -1,97 +1,118 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addCourseCategory,
-  fetchCourseCategorybyId,
-  getAllCourseCategory,
-  updateCourseCategory,
-} from "../../Redux/Course/Action";
-import { FaEdit } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import Navbar from "../Navbar/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addEducation,
+  fetchEducationEdit,
+  getEducation,
+  updateCourseEducation,
+} from "../../Redux/Auth/Action";
+import { FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 
-const Coursecategory = () => {
+const Education = () => {
   const dispatch = useDispatch();
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  //   const token = localStorage.getItem("token");
+
   const [show, setShow] = useState(false);
   const [onEditing, setonEditing] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
+  const [search, setSearch] = useState("");
+
+  const { getAllEducation, getEducationByID } = useSelector(
+    (store) => store.education
+  );
+
+  const [userEducation, setuserEducation] = useState({
+    id: "",
+    education: "",
+  });
+
+  useEffect(() => {
+    dispatch(getEducation());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (getEducationByID) {
+      setuserEducation((prevData) => ({
+        ...prevData,
+        id: getEducationByID.id,
+        education: getEducationByID.education,
+      }));
+    }
+  }, [getEducationByID]);
 
   const handleClose = () => {
     if (!onEditing) {
       setShow(false);
-      setcourseCategory("");
     } else {
       setShow(false);
       setonEditing(false);
-      setcourseCategory("");
     }
   };
-  const { getAllCourseCatagory, getCoursebyId } = useSelector(
-    (store) => store.course
-  );
 
-  const [courseCategory, setcourseCategory] = useState({
-    id: "",
-    category: "",
-    categoryDesc: "",
-  });
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (/^[a-zA-Z\s]*$/.test(value)) {
-      setcourseCategory({ ...courseCategory, [name]: value });
+      setuserEducation({ ...userEducation, [name]: value });
     }
   };
-  useEffect(() => {
-    dispatch(getAllCourseCategory());
-  }, [dispatch]);
 
-  useEffect(() => {
-    if (getCoursebyId) {
-      setcourseCategory((prevData) => ({
-        ...prevData,
-        id: getCoursebyId.id,
-        category: getCoursebyId.category,
-        categoryDesc: getCoursebyId.categoryDesc,
-      }));
-    }
-  }, [getCoursebyId]);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const handleRowsPerPageChange = (newPerPage) => {
+    setRowsPerPage(newPerPage);
+    setCurrentPage(1);
+  };
+  const handleSearch = (event) => {
+    setSearch(event.target.value);
+    setCurrentPage(1);
+  };
+  const filteredData = getAllEducation?.filter((item) =>
+    item.subCategory?.toLowerCase().includes(search.toLowerCase())
+  );
+  const dataToShow = getAllEducation?.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
-  // const handleCategorySubmit = (e) => {
+  // const handleEducationSubmit = (e) => {
   //   e.preventDefault();
   //   if (onEditing) {
-  //     dispatch(updateCourseCategory(getCoursebyId.id, courseCategory)).then(
+  //     dispatch(updateCourseEducation(getEducationByID.id, userEducation)).then(
   //       () => {
   //         handleClose();
-  //         dispatch(getAllCourseCategory());
+  //         dispatch(getEducation());
   //         setonEditing(false);
-  //         setcourseCategory("");
+  //         setuserEducation("");
   //       }
   //     );
   //   } else {
-  //     dispatch(addCourseCategory(courseCategory)).then(() => {
-  //       dispatch(getAllCourseCategory());
-  //       setShow(false);
-  //       setcourseCategory("");
+  //     dispatch(addEducation(userEducation)).then(() => {
+  //       dispatch(getEducation());
+  //       setuserEducation("");
+  //       handleClose();
   //     });
   //   }
   // };
 
-  const handleCategorySubmit = (e) => {
+  const handleEducationSubmit = (e) => {
     e.preventDefault();
 
     const actionMessage = onEditing ? "update" : "add";
     const actionTitle = onEditing
-      ? "Are you sure you want to update this category?"
-      : "Are you sure you want to add this category?";
+      ? "Are you sure you want to update this education?"
+      : "Are you sure you want to add this education?";
     const successMessage = onEditing
-      ? "Category updated successfully."
-      : "Category added successfully.";
+      ? "Education updated successfully."
+      : "Education added successfully.";
     const errorMessage = onEditing
-      ? "There was an error updating the category."
-      : "There was an error adding the category.";
+      ? "There was an error updating the education."
+      : "There was an error adding the education.";
 
     Swal.fire({
       title: "Are you sure?",
@@ -105,12 +126,12 @@ const Coursecategory = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         if (onEditing) {
-          dispatch(updateCourseCategory(getCoursebyId.id, courseCategory))
+          dispatch(updateCourseEducation(getEducationByID.id, userEducation))
             .then(() => {
               handleClose();
-              dispatch(getAllCourseCategory());
+              dispatch(getEducation());
               setonEditing(false);
-              setcourseCategory("");
+              setuserEducation("");
               Swal.fire({
                 icon: "success",
                 title: "Success!",
@@ -128,11 +149,11 @@ const Coursecategory = () => {
               });
             });
         } else {
-          dispatch(addCourseCategory(courseCategory))
+          dispatch(addEducation(userEducation))
             .then(() => {
-              dispatch(getAllCourseCategory());
-              setShow(false);
-              setcourseCategory("");
+              dispatch(getEducation());
+              setuserEducation("");
+              handleClose();
               Swal.fire({
                 icon: "success",
                 title: "Success!",
@@ -154,47 +175,24 @@ const Coursecategory = () => {
     });
   };
 
-  const handleShow = () => {
-    setShow(true);
-  };
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-  const handleRowsPerPageChange = (newPerPage) => {
-    setRowsPerPage(newPerPage);
-    setCurrentPage(1);
-  };
-  const handleSearch = (event) => {
-    setSearch(event.target.value);
-    setCurrentPage(1);
-  };
-  const filteredData = getAllCourseCatagory?.filter((item) =>
-    item.subCategory?.toLowerCase().includes(search.toLowerCase())
-  );
-  const dataToShow = getAllCourseCatagory?.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-  const handelfetchCourse = (row) => {
-    dispatch(fetchCourseCategorybyId(row.id));
+  const handelfetchEducation = (row) => {
+    dispatch(fetchEducationEdit(row.id));
     setShow(true);
     setonEditing(true);
   };
+
+  const handleShow = () => {
+    setShow(true);
+  };
   const columns = [
     {
-      name: "Sn",
+      name: "SN",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
       sortable: false,
-      width: "60px",
     },
     {
-      name: "Subject category",
-      selector: (row) => row.category,
-      sortable: true,
-    },
-    {
-      name: "Subject Description",
-      selector: (row) => row.categoryDesc,
+      name: "Betch",
+      selector: (row) => row.education,
       sortable: true,
     },
     {
@@ -206,7 +204,7 @@ const Coursecategory = () => {
           <button
             type="button"
             className="btn btn-warning text-white btn-sm me-2"
-            onClick={() => handelfetchCourse(row)}
+            onClick={() => handelfetchEducation(row)}
           >
             <FaEdit />
           </button>
@@ -214,6 +212,7 @@ const Coursecategory = () => {
       ),
     },
   ];
+
   const customStyles = {
     headCells: {
       style: {
@@ -247,7 +246,7 @@ const Coursecategory = () => {
         <div className="row mainbtn mb-0  align-items-center">
           <div className="col-auto d-flex align-items-center">
             <button className="btn btn-primary" onClick={handleShow}>
-              CREATE CATEGORY
+              CREATE EDUCATION
             </button>
           </div>
         </div>
@@ -255,7 +254,9 @@ const Coursecategory = () => {
         <div className="card3">
           <div className="card-body">
             <div className="d-flex justify-content-between mb-3">
-              <h5 className="left-header text-primary">COURSE CATAGORY LIST</h5>
+              <h5 className="left-header text-primary">
+                COURSE EDUCATION LIST
+              </h5>
               <input
                 type="text"
                 value={search}
@@ -275,7 +276,7 @@ const Coursecategory = () => {
               onChangeRowsPerPage={handleRowsPerPageChange}
               className="responsive-table"
               customStyles={customStyles}
-            />
+            />{" "}
           </div>
         </div>
         {/* modal */}
@@ -285,11 +286,11 @@ const Coursecategory = () => {
           tabIndex="-1"
           role="dialog"
         >
-          <div className="modal-dialog modal-lg">
+          <div className="modal-dialog ">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title text-primary">
-                  <b>{onEditing ? "Update Category" : "Add Category"}</b>
+                  <b>{onEditing ? "Update Education" : "Add Education"}</b>
                 </h5>
                 <button
                   type="button"
@@ -299,33 +300,21 @@ const Coursecategory = () => {
                 ></button>
               </div>
               <div className="modal-body">
-                <form onSubmit={handleCategorySubmit}>
+                <form onSubmit={handleEducationSubmit}>
                   <div className="form-group mb-3 ">
-                    <label htmlFor="category">
-                      <b>Course Category</b>
+                    <label htmlFor="education">
+                      <b>Name</b>
                     </label>
                     <input
                       type="text"
                       className="form-control"
-                      name="category"
-                      id="category"
-                      value={courseCategory.category || ""}
+                      name="education"
+                      id="education"
+                      value={userEducation.education || ""}
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className="form-group mb-3 ">
-                    <label htmlFor="categoryDesc">
-                      <b>Course Description</b>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="categoryDesc"
-                      id="categoryDesc"
-                      value={courseCategory.categoryDesc || ""}
-                      onChange={handleInputChange}
-                    />
-                  </div>
+
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
                       {onEditing ? "UPDATE" : "SUBMIT"}
@@ -340,4 +329,4 @@ const Coursecategory = () => {
     </div>
   );
 };
-export default Coursecategory;
+export default Education;
