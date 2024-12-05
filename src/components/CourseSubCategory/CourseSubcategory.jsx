@@ -62,10 +62,36 @@ const CourseSubcategory = () => {
     }
   };
 
+  // const handleSubInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setcourseSubCategory({ ...courseSubCategory, [name]: value });
+
+  //   // if (/^[a-zA-Z\s]*$/.test(value)) {
+  //   //   setcourseSubCategory({ ...courseSubCategory, [name]: value });
+  //   // }
+  // };
   const handleSubInputChange = (e) => {
     const { name, value } = e.target;
-    if (/^[a-zA-Z\s]*$/.test(value)) {
-      setcourseSubCategory({ ...courseSubCategory, [name]: value });
+
+    if (name === "subCategory" || name === "subCategoryDesc") {
+      let trimmedValue = value.replace(/^\s+/, ""); // removing leading spaces only
+      trimmedValue = trimmedValue.replace(/\s+$/, ""); //  all trailing spaces remove
+
+      // if the value ends with a space, allow only one trailing space
+      if (value.endsWith(" ")) {
+        trimmedValue += " "; //  one trailing space allowed
+      }
+
+      // Update the state with the processed value
+      setcourseSubCategory({
+        ...courseSubCategory,
+        [name]: trimmedValue,
+      });
+    } else {
+      setcourseSubCategory({
+        ...courseSubCategory,
+        [name]: value,
+      });
     }
   };
 

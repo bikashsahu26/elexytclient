@@ -38,10 +38,35 @@ const Coursecategory = () => {
     category: "",
     categoryDesc: "",
   });
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   if (/^[a-zA-Z\s]*$/.test(value)) {
+  //     setcourseCategory({ ...courseCategory, [name]: value });
+  //   }
+  // };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (/^[a-zA-Z\s]*$/.test(value)) {
-      setcourseCategory({ ...courseCategory, [name]: value });
+
+    if (name === "category" || name === "categoryDesc") {
+      let trimmedValue = value.replace(/^\s+/, ""); // removing leading spaces only
+      trimmedValue = trimmedValue.replace(/\s+$/, ""); //  all trailing spaces remove
+
+      // if the value ends with a space, allow only one trailing space
+      if (value.endsWith(" ")) {
+        trimmedValue += " "; //  one trailing space allowed
+      }
+
+      // Update the state with the processed value
+      setcourseCategory({
+        ...courseCategory,
+        [name]: trimmedValue,
+      });
+    } else {
+      setcourseCategory({
+        ...courseCategory,
+        [name]: value,
+      });
     }
   };
   useEffect(() => {

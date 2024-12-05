@@ -1,14 +1,20 @@
 import React from "react";
 import "./Navbar.css";
 import { CgProfile } from "react-icons/cg";
-import { FaHome } from "react-icons/fa";
 
 const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="nav-left">
         <a href="/course">
-          <FaHome />
+          {/* <FaHome /> */}
+          <h4
+            className="ps-3 logo-e"
+            //  onClick={handleLogoClick}
+          >
+            <span className="custom-e">E</span>
+            <span className="custom-letter">lexyt</span>
+          </h4>
         </a>
         <a href="/course">Course</a>
         <a href="/courseCategory">Category</a>

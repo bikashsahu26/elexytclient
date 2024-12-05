@@ -54,13 +54,36 @@ const Education = () => {
     }
   };
 
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   if (/^[a-zA-Z\s]*$/.test(value)) {
+  //     setuserEducation({ ...userEducation, [name]: value });
+  //   }
+  // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (/^[a-zA-Z\s]*$/.test(value)) {
-      setuserEducation({ ...userEducation, [name]: value });
+
+    if (name === "education") {
+      let trimmedValue = value.replace(/^\s+/, ""); // removing leading spaces only
+      trimmedValue = trimmedValue.replace(/\s+$/, ""); //  all trailing spaces remove
+
+      // if the value ends with a space, allow only one trailing space
+      if (value.endsWith(" ")) {
+        trimmedValue += " "; //  one trailing space allowed
+      }
+
+      // Update the state with the processed value
+      setuserEducation({
+        ...userEducation,
+        [name]: trimmedValue,
+      });
+    } else {
+      setuserEducation({
+        ...userEducation,
+        [name]: value,
+      });
     }
   };
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

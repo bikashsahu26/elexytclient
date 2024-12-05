@@ -181,14 +181,11 @@ const Course = () => {
       if (value.endsWith(" ")) {
         trimmedValue += " ";
       }
-      const regex = /^[A-Za-z\s]*$/;
-      if (regex.test(trimmedValue)) {
-        setcourse({ ...course, [name]: trimmedValue });
-      } else {
-        alert(
-          "The field must contain only letters and spaces, with no leading spaces and at most one trailing space."
-        );
-      }
+      // const regex = /^[A-Za-z\s]*$/;
+      // if (regex.test(trimmedValue)) {
+      //   setcourse({ ...course, [name]: trimmedValue });
+      // }
+      setcourse({ ...course, [name]: trimmedValue });
     } else {
       setcourse({ ...course, [name]: value });
     }
