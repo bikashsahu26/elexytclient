@@ -16,10 +16,14 @@ const Navbar = () => {
             <span className="custom-letter">lexyt</span>
           </h4>
         </a>
-        <a href="/course">Course</a>
-        <a href="/courseCategory">Category</a>
-        <a href="/courseSubcategory">SubCategory</a>
-        <a href="/education">Education</a>
+        <div className="center-items">
+          <a className="justify-content-center" href="/course">
+            Course
+          </a>
+          <a href="/courseCategory">Category</a>
+          <a href="/courseSubcategory">SubCategory</a>
+          <a href="/education">Education</a>
+        </div>
       </div>
 
       <div className="d-flex ms-auto">
@@ -36,7 +40,7 @@ const Navbar = () => {
           </div>
           <ul className="dropdown-menu dropdown-menu-end">
             <li>
-              <a className="dropdown-item" href="/">
+              <a className="dropdown-item" href="/profile">
                 My Profile
               </a>
             </li>

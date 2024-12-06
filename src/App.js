@@ -9,6 +9,7 @@ import Signup from './components/Signin/Signup';
 import Footer from './components/Footer/Footer';
 import UserLogin from './components/UserLogin/UserLogin';
 import Education from './components/Education/Education';
+import ProfilePage from './components/Profile/ProfilePage';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Route path="/footer" element={<Footer/>}> </Route>
       <Route path="/userlogin" element={<UserLogin/>}> </Route>
       <Route path="/education" element={<Education/>}> </Route>
+      <Route path="/profile" element={<ProfilePage/>}> </Route>
 
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>

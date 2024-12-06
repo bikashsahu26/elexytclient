@@ -185,7 +185,16 @@ const Course = () => {
       // if (regex.test(trimmedValue)) {
       //   setcourse({ ...course, [name]: trimmedValue });
       // }
-      setcourse({ ...course, [name]: trimmedValue });
+      if (trimmedValue) {
+        setcourse({ ...course, [name]: trimmedValue });
+      } else {
+        alert(
+          "Invalid file type! Please select a video file (MP4, MKV, AVCHD)."
+        );
+        return;
+      }
+
+      // setcourse({ ...course, [name]: trimmedValue });
     } else {
       setcourse({ ...course, [name]: value });
     }
@@ -461,14 +470,12 @@ const Course = () => {
         trimmedValue += " ";
       }
 
-      const regex = /^[A-Za-z\s]*$/; //allow letters and spaces contentName
+      // const regex = /^[A-Za-z\s]*$/; //allow letters and spaces contentName
 
-      if (regex.test(trimmedValue)) {
+      if (trimmedValue) {
         updatedContent[name] = trimmedValue;
       } else {
-        alert(
-          "Content name must contain only letters and spaces, with no leading spaces and at most one trailing space."
-        );
+        alert("Content name can't be empty.");
         return;
       }
     } else {
@@ -740,15 +747,20 @@ const Course = () => {
         trimmedValue += " "; // only one trailing space
       }
 
-      const regex = /^[A-Za-z\s]*$/; //  alphabets and spaces allowed (no special characters)
-
-      if (regex.test(trimmedValue)) {
+      // const regex = /^[A-Za-z\s]*$/; //  alphabets and spaces allowed (no special characters)
+      // if (regex.test(trimmedValue)) {
+      //   setCourseDocument({
+      //     ...courseDocument,
+      //     [name]: trimmedValue,
+      //   });
+      // }
+      if (trimmedValue) {
         setCourseDocument({
           ...courseDocument,
           [name]: trimmedValue,
         });
       } else {
-        alert("Document name must contain only letters and spaces.");
+        alert("Document name can't be Empty.");
       }
     } else {
       setCourseDocument({
