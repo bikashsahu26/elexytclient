@@ -86,6 +86,7 @@ const Course = () => {
       showPoweredBy: false, // Hides the "Powered by Jodit" footer
       statusbar: false, // Hides the entire status bar
       toolbar: true, // Keep toolbar visible
+      placeholder: "",
     }),
     []
   );
@@ -517,8 +518,24 @@ const Course = () => {
   };
   const contentInputRef = useRef(null);
 
+  // const handleResetContentForm = () => {
+  //   setCourseContent("");
+
+  //   // Reset the file input field manually using the ref
+  //   if (contentInputRef.current) {
+  //     contentInputRef.current.value = ""; // Clear the file input
+  //   }
+  // };
   const handleResetContentForm = () => {
-    setCourseContent("");
+    setCourseContent((prevContent) => ({
+      ...prevContent,
+      contentName: "", // reset only content fields
+      contentDuration: "",
+      contentType: "",
+      file: null, // clear file input
+      contentFilename: "",
+      contentUploadPath: "",
+    }));
 
     // Reset the file input field manually using the ref
     if (contentInputRef.current) {
@@ -652,7 +669,7 @@ const Course = () => {
 
   const [courseDocument, setCourseDocument] = useState({
     id: "", //no
-    courseId: "", //dropdown
+    courseId: "",
     documentUploadPath: "",
     documentName: "", //input type text
     documentFilename: "",
@@ -787,12 +804,27 @@ const Course = () => {
   // };
   const fileInputRef = useRef(null);
 
+  // const handleResetMaterialfield = () => {
+  //   // Reset the file input field manually using the ref
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = ""; // Clear the file input
+  //   }
+  // };
   const handleResetMaterialfield = () => {
-    // Reset the file input field manually using the ref
+    setCourseDocument((prevDocument) => ({
+      ...prevDocument,
+      documentName: "",
+      documentType: "",
+      file: null,
+      documentFilename: "",
+      documentUploadPath: "",
+    }));
+
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Clear the file input
+      fileInputRef.current.value = "";
     }
   };
+
   const handleMaterialSubmit = (e) => {
     e.preventDefault();
 
@@ -824,53 +856,32 @@ const Course = () => {
         formData.append("documentFilename", courseDocument.documentFilename);
         formData.append("documentType", courseDocument.documentType);
 
-        if (onEditing) {
-          dispatch(updateCourseMaterial(courseDocument.id, formData))
-            .then(() => {
-              Swal.fire({
-                title: "Updated!",
-                text: "The material has been updated successfully.",
-                icon: "success",
-              }).then(() => {
-                dispatch(getAllMaterial(courseDocument.courseId));
-                setShowMeterialmodal(false);
-                setCourseDocument("");
-                handleResetMaterialfield();
-              });
-            })
-            .catch((error) => {
-              Swal.fire({
-                title: "Error!",
-                text: "There was an error updating the material. Please try again.",
-                icon: "error",
-              });
-            });
-        } else {
-          dispatch(addCourseMaterial(formData))
-            .then(() => {
-              Swal.fire({
-                title: "Uploaded!",
-                text: "The material has been uploaded successfully.",
-                icon: "success",
-              }).then(() => {
-                dispatch(getAllMaterial(courseDocument.courseId));
-                setShowMeterialmodal(false);
-                setCourseDocument("");
-                handleResetMaterialfield();
-              });
-            })
-            .catch(() => {
-              Swal.fire({
-                title: "Error!",
-                text: "There was an error uploading the material. Please try again.",
-                icon: "error",
-              });
-            });
-        }
+        const actionPromise = onEditing
+          ? dispatch(updateCourseMaterial(courseDocument.id, formData))
+          : dispatch(addCourseMaterial(formData));
 
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+        actionPromise
+          .then(() => {
+            Swal.fire({
+              title: onEditing ? "Updated!" : "Uploaded!",
+              text: onEditing
+                ? "The material has been updated successfully."
+                : "The material has been uploaded successfully.",
+              icon: "success",
+            }).then(() => {
+              dispatch(getAllMaterial(courseDocument.courseId));
+              setShowMeterialmodal(false);
+              setCourseDocument("");
+              handleResetMaterialfield();
+            });
+          })
+          .catch(() => {
+            Swal.fire({
+              title: "Error!",
+              text: "There was an error uploading the material. Please try again.",
+              icon: "error",
+            });
+          });
       } else {
         Swal.fire({
           title: "Cancelled",
