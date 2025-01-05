@@ -170,6 +170,11 @@ const Course = () => {
         alert(
           "Invalid file type! Please select a JPEG, PNG, GIF, or WEBP image file."
         );
+        e.target.value = null; // This clears the file input field
+        setcourse({
+          ...course,
+          [name]: null, // Clear the course state for the file field
+        });
       }
     } else if (
       name === "courseName" ||
@@ -189,9 +194,11 @@ const Course = () => {
       if (trimmedValue) {
         setcourse({ ...course, [name]: trimmedValue });
       } else {
-        alert(
-          "Invalid file type! Please select a video file (MP4, MKV, AVCHD)."
-        );
+        // alert(
+        //   "Invalid file type! Please select a video file (MP4, MKV, AVCHD)."
+        // );
+        alert(`${name} cannot be empty.`);
+
         return;
       }
 
@@ -1875,7 +1882,7 @@ const Course = () => {
                   <div className="row g-3">
                     <div className="form-group col-md-12 ">
                       <label htmlFor="description">
-                        <b>Description</b>
+                        <b>About This Course</b>
                       </label>
                       <JoditEditor
                         value={course.description || ""}

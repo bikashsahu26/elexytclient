@@ -274,34 +274,43 @@ const Education = () => {
           </div>
         </div>
         {/* data table card3 */}
-        <div className="card3">
-          <div className="card-body">
-            <div className="d-flex justify-content-between mb-3">
-              <h5 className="left-header text-primary">
-                COURSE EDUCATION LIST
-              </h5>
-              <input
-                type="text"
-                value={search}
-                onChange={handleSearch}
-                placeholder="Search"
-                className="form-control search-input w-25"
-              />
+        {dataToShow && dataToShow.length > 0 ? (
+          <div className="card3">
+            <div className="card-body">
+              <div className="d-flex justify-content-between mb-3">
+                <h5 className="left-header text-primary">
+                  COURSE EDUCATION LIST
+                </h5>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={handleSearch}
+                  placeholder="Search"
+                  className="form-control search-input w-25"
+                />
+              </div>
+              {/* datatable */}
+              <DataTable
+                columns={columns}
+                data={dataToShow || []}
+                pagination
+                paginationServer
+                paginationTotalRows={filteredData.length || 0}
+                onChangePage={handlePageChange}
+                onChangeRowsPerPage={handleRowsPerPageChange}
+                className="responsive-table"
+                customStyles={customStyles}
+              />{" "}
             </div>
-            {/* datatable */}
-            <DataTable
-              columns={columns}
-              data={dataToShow || []}
-              pagination
-              paginationServer
-              paginationTotalRows={filteredData.length || 0}
-              onChangePage={handlePageChange}
-              onChangeRowsPerPage={handleRowsPerPageChange}
-              className="responsive-table"
-              customStyles={customStyles}
-            />{" "}
           </div>
-        </div>
+        ) : (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: "200px" }}
+          >
+            <p>No data available, create the task.</p>
+          </div>
+        )}
         {/* modal */}
         {show && <div className="modal-backdrop fade show"></div>}
         <div
