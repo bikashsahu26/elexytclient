@@ -96,25 +96,6 @@ const Faculty = () => {
     []
   );
 
-  // const handleInputChange = (e) => {
-  //   const { name, value, type, files } = e.target;
-
-  //   if (name === "experience" && value < 0) {
-  //     alert("Experience cannot be a negative value.");
-  //     return;
-  //   }
-  //   if (name === "photo" && files.length > 0) {
-  //     const file = files[0];
-  //     if (!file.type.startsWith("image/")) {
-  //       alert("Please upload a valid image file (jpg, jpeg, png).");
-  //       return;
-  //     }
-  //   }
-
-  //   // setFaculty({ ...faculty, [name]: type === "file" ? files[0] : value });
-  //   setFaculty({ ...faculty, [name]: value });
-  // };
-
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
 
@@ -363,19 +344,19 @@ const Faculty = () => {
           </div>
         </div>
         {/* data table card3 */}
-        {dataToShow && dataToShow.length > 0 ? (
-          <div className="card3">
-            <div className="card-body">
-              <div className="d-flex justify-content-between mb-3">
-                <h5 className="left-header text-primary">Faculty Details</h5>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={handleSearch}
-                  placeholder="Search"
-                  className="form-control search-input w-25"
-                />
-              </div>
+        <div className="card3">
+          <div className="card-body">
+            <div className="d-flex justify-content-between mb-3">
+              <h5 className="left-header text-primary">Faculty Details</h5>
+              <input
+                type="text"
+                value={search}
+                onChange={handleSearch}
+                placeholder="Search"
+                className="form-control search-input w-25"
+              />
+            </div>
+            {dataToShow && dataToShow.length > 0 ? (
               <DataTable
                 columns={columns}
                 data={dataToShow || []}
@@ -386,17 +367,17 @@ const Faculty = () => {
                 onChangeRowsPerPage={handleRowsPerPageChange}
                 className="responsive-table"
                 customStyles={customStyles}
-              />{" "}
-            </div>
+              />
+            ) : (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ minHeight: "200px" }}
+              >
+                <p>No data available, create the Faculty Details .</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "200px" }}
-          >
-            <p>No data available, create the Faculty Details .</p>
-          </div>
-        )}
+        </div>
 
         {show && <div className="modal-backdrop fade show"></div>}
         <div

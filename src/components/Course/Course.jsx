@@ -25,13 +25,12 @@ import {
 
 import Navbar from "../Navbar/Navbar";
 import { SiAirplayvideo } from "react-icons/si";
-import { FaEdit, FaEye, FaFileAlt, FaPause } from "react-icons/fa";
-import ReactPlayer from "react-player";
+import { FaEdit, FaEye, FaFileAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { IoIosFastforward, IoIosRewind, IoMdPlay } from "react-icons/io";
 import JoditEditor from "jodit-react";
 import { getAllFaculty } from "../../Redux/Auth/Action";
 import DataTable from "react-data-table-component";
+import PlayerSimple from "../Player/PlayerSimple";
 
 const Course = () => {
   const dispatch = useDispatch();
@@ -148,10 +147,6 @@ const Course = () => {
     }
   }, [fetchCourse, getAllCourseCatagory, allCourseCategory]);
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setcourse({ ...course, [name]: value });
-  // };
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === "file" && files.length > 0) {
@@ -329,37 +324,6 @@ const Course = () => {
       }
     });
   };
-  // const handleFilter = () => {
-  //   let filtered = getallCourse;
-
-  //   // // Apply search filter
-  //   // if (search) {
-  //   //   filtered = filtered.filter(
-  //   //     (item) =>
-  //   //       item.courseName?.toLowerCase().includes(search.toLowerCase()) ||
-  //   //       item.category?.toLowerCase().includes(search.toLowerCase()) ||
-  //   //       item.creator?.toLowerCase().includes(search.toLowerCase())
-  //   //   );
-  //   // }
-
-  //   // Apply Category filter
-  //   if (category) {
-  //     filtered = filtered.filter((item) => item.category === category);
-  //   }
-
-  //   // Apply SubCategory filter
-  //   if (subCategory) {
-  //     filtered = filtered.filter((item) => item.subCategory === subCategory);
-  //   }
-
-  //   // Apply Faculty filter
-  //   if (faculty) {
-  //     filtered = filtered.filter((item) => item.creator === faculty);
-  //   }
-
-  //   // Update filtered course data
-  //   setFilteredCourseData(filtered);
-  // };
 
   const [search, setSearch] = useState("");
 
@@ -417,35 +381,6 @@ const Course = () => {
     setFilteredData(filtered);
   }, [category, subCategory, faculty, search, getallCourse]);
 
-  // const handleFilter = (e) => {
-  //   e.preventDefault();
-
-  //   // Filter the data based on the selected values
-  //   let filtered = getallCourse;
-
-  //   if (category) {
-  //     filtered = filtered.filter((item) => item.categoryId === category);
-  //   }
-
-  //   if (subCategory) {
-  //     filtered = filtered.filter((item) => item.subCategoryId === subCategory);
-  //   }
-
-  //   if (faculty) {
-  //     filtered = filtered.filter((item) => item.facultyName === faculty);
-  //   }
-
-  //   setFilteredData(filtered); // Set filtered data state
-  // };
-  // const dataToShow = filteredData
-  //   .filter(
-  //     (item) =>
-  //       item.courseName?.toLowerCase().includes(search.toLowerCase()) ||
-  //       item.category?.toLowerCase().includes(search.toLowerCase()) ||
-  //       item.creator?.toLowerCase().includes(search.toLowerCase())
-  //   )
-  //   .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-
   //course create show in card and edit end
 
   const handlePageChange = (page) => {
@@ -459,30 +394,11 @@ const Course = () => {
     setSearch(event.target.value);
     setCurrentPage(1);
   };
-  // const filteredData = getallCourse?.filter(
-  //   (item) =>
-  //     item.courseName?.toLowerCase().includes(search.toLowerCase()) ||
-  //     item.category?.toLowerCase().includes(search.toLowerCase()) ||
-  //     item.creator?.toLowerCase().includes(search.toLowerCase())
-  // );
 
   const dataToShow = filteredData?.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
-  // const handleViewDetails = (courseId) => {
-  //   const courseDetails = getallCourse.find((course) => course.id === courseId);
-
-  //   if (courseDetails) {
-  //     setSelectedCourseData(courseDetails);
-  //     setShowCard(true);
-  //     //  const fee = getFee.find((fee) => fee.courseId === courseDetails.id);
-  //     //     setFeeExists(fee ? true : false);
-  //   } else {
-  //     setSelectedCourseData(null);
-  //     setShowCard(false);
-  //   }
-  // };
 
   const columns = [
     {
@@ -664,14 +580,6 @@ const Course = () => {
   };
   const contentInputRef = useRef(null);
 
-  // const handleResetContentForm = () => {
-  //   setCourseContent("");
-
-  //   // Reset the file input field manually using the ref
-  //   if (contentInputRef.current) {
-  //     contentInputRef.current.value = ""; // Clear the file input
-  //   }
-  // };
   const handleResetContentForm = () => {
     setCourseContent((prevContent) => ({
       ...prevContent,
@@ -776,38 +684,14 @@ const Course = () => {
     }
   };
   //===================================vedio player===============================
-
-  const [selectedVideo, setSelectedVideo] = useState(null);
-  const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [videoSource, setVideoSource] = useState(null);
+  const [playVideo, setPlayVideo] = useState(false);
 
   const handleVideoClick = (videoPath) => {
-    setSelectedVideo(videoPath);
+    setVideoSource(videoPath);
+    setPlayVideo(true);
   };
-
-  const closeVideoPlayer = () => {
-    setSelectedVideo(null);
-  };
-  // Play/Pause functionality
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  // Rewind 10 seconds
-  const handleRewind = () => {
-    if (videoRef.current) {
-      const currentTime = videoRef.current.getCurrentTime();
-      videoRef.current.seekTo(Math.max(currentTime - 10, 0)); // Rewind 10 seconds
-    }
-  };
-
-  // Forward 10 seconds
-  const handleForward = () => {
-    if (videoRef.current) {
-      const currentTime = videoRef.current.getCurrentTime();
-      videoRef.current.seekTo(currentTime + 10); // Forward 10 seconds
-    }
-  };
+  const videoRef = useRef(null);
 
   // content fetch edit and to ply the vedio end
   // ================================material start===================================================
@@ -1203,31 +1087,6 @@ const Course = () => {
       <Navbar />
       <div className="container-fluid mt-4">
         <div className="container">
-          {/* <div className="row justify-content-center mb-3">
-            <div className="col-md-4">
-              <select
-                name="course"
-                value={selectedCourse}
-                onChange={handleCourseChange}
-                id="course"
-                className="form-select "
-              >
-                <option value="">Choose Course...</option>
-                {getallCourse &&
-                  getallCourse.map((course) => (
-                    <option key={course.id} value={course.courseName}>
-                      {`${course.courseName} - ${course.category} - ${course.subCategory}`}{" "}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div className="col-auto">
-              <button className="btn btn-primary ms-2" onClick={handleShow}>
-                Create Course
-              </button>
-            </div>
-          </div> */}
-
           <div>
             <div className="row mb-3 justify-content-between align-items-center">
               {/* Category Dropdown */}
@@ -1295,15 +1154,6 @@ const Course = () => {
               </div>
 
               {/* Filter and Create Course Buttons */}
-              {/* <div className="col-auto d-flex align-items-center">
-                <button
-                  type="submit"
-                  className="btn submit btn-warning ms-2"
-                  // onClick={handleFilter}
-                >
-                  Filter
-                </button>
-              </div> */}
 
               <button
                 className="btn col-auto btn-primary ms-2"
@@ -1316,20 +1166,20 @@ const Course = () => {
         </div>
 
         {/* {dataToShow && */}
-        {dataToShow.length > 0 ? (
-          <div className="card course-card">
-            <div className="card-body">
-              <div className="d-flex justify-content-between mb-3">
-                <h5 className="left-header text-primary">Course List </h5>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={handleSearch}
-                  placeholder="Search"
-                  className="form-control search-input w-25"
-                />
-              </div>
-              {/* datatable */}
+        <div className="card course-card">
+          <div className="card-body">
+            <div className="d-flex justify-content-between mb-3">
+              <h5 className="left-header text-primary">Course List </h5>
+              <input
+                type="text"
+                value={search}
+                onChange={handleSearch}
+                placeholder="Search"
+                className="form-control search-input w-25"
+              />
+            </div>
+            {/* datatable */}
+            {dataToShow && dataToShow.length > 0 ? (
               <DataTable
                 columns={columns}
                 data={dataToShow || []}
@@ -1340,17 +1190,18 @@ const Course = () => {
                 onChangeRowsPerPage={handleRowsPerPageChange}
                 className="responsive-table"
                 customStyles={customStyles}
-              />{" "}
-            </div>
+              />
+            ) : (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ minHeight: "200px" }}
+              >
+                <p>No data available, create the Education .</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "200px" }}
-          >
-            <p>No data available, create the Education .</p>
-          </div>
-        )}
+        </div>
+
         {/* details table on change with card  */}
         {showCard && (
           <div className="col-md-12 mb-4">
@@ -1532,144 +1383,15 @@ const Course = () => {
                           </td>
                         </tr>
                       ))}
-                      {/* {contentData && contentData.length > 0 ? (
-                        contentData.map((content) => (
-                          <tr key={content.id}>
-                            <td>{content.contentName}</td>
-                            <td>{content.contentDuration}</td>
-                            <td>{content.contentType}</td>
-                            <td>
-                              {content.videoUrl && (
-                                <button className="btn btn-warning">
-                                  <a
-                                    href={content.videoUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <SiAirplayvideo />
-                                  </a>
-                                </button>
-                              )}
-                            </td>
-                            <td>
-                              <button className="btn btn-warning">
-                                <FaEdit />
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="5">No content available.</td>
-                        </tr>
-                      )} */}
-
-                      {/* {contentData.map((content) => (
-                        <tr key={content.id}>
-                          <td>{content.contentName}</td>
-                          <td>{content.contentDuration}</td>
-                          <td>{content.contentType}</td>
-                          <td>
-                            <button
-                              className="btn btn-warning"
-                              // onClick={() =>handleVideoClick(content.contentUploadPath)}
-                              onClick={() =>
-                                handleVideoClick(
-                                  "./videos/Java - Comments ( 360 X 640 ).mp4"
-                                )
-                              }
-                            >
-                              <SiAirplayvideo />{" "}
-                            </button>
-                          </td>
-                          <td>
-                            <button
-                              className="btn btn-warning"
-                              onClick={() => handelfetchContent(content.id)}
-                            >
-                              <FaEdit />
-                            </button>
-                          </td>
-                        </tr>
-                      ))} */}
                     </tbody>
                   </table>
                   {/* ---------------------vedioplayer start--------------*/}
-                  {selectedVideo && (
-                    <div
-                      className="video-player position-relative bg-white p-2 rounded shadow"
-                      style={{
-                        width: "100%", // Full width of the container
-                        maxWidth: "800px", // Max width on larger screens
-                        // margin: "0 auto",
-                        position: "sticky",
-                        //top: "20px",
-                        //zIndex: 1000,
-                      }}
-                    >
-                      <button
-                        className="btn-close position-absolute top-0 end-0 m-1"
-                        onClick={closeVideoPlayer}
-                        aria-label="Close"
-                      ></button>
-
-                      <ReactPlayer
-                        ref={videoRef}
-                        //url={selectedVideo}
-                        //src="./videos/Java - Comments ( 360 X 640 ).mp4"
-                        url={"./videos/Java - Comments ( 360 X 640 ).mp4"}
-                        playing={isPlaying}
-                        controls={true}
-                        width="95%"
-                        height="auto"
-                        volume={true}
-                        muted={false}
-                        //light={true}
-                      />
-                      <div
-                        className="d-flex justify-content-center align-items-center"
-                        // style={{ height: "100vh" }}
-                      >
-                        <button
-                          className="btn btn-secondary mx-2"
-                          onClick={handleRewind}
-                        >
-                          <IoIosRewind />{" "}
-                        </button>
-                        {/* Play/Pause Button */}
-                        <button
-                          className="btn btn-secondary mx-2"
-                          onClick={togglePlayPause}
-                        >
-                          {isPlaying ? <FaPause /> : <IoMdPlay />}
-                        </button>
-                        <button
-                          className="btn btn-secondary mx-2"
-                          onClick={handleForward}
-                        >
-                          <IoIosFastforward />{" "}
-                        </button>
-                      </div>
-                      {selectedCourseData && (
-                        <div>
-                          <p>
-                            <strong>Course Name:</strong>{" "}
-                            {selectedCourseData.courseName}
-                          </p>
-                          <p>
-                            <strong>Description:</strong>{" "}
-                            {selectedCourseData.courseDesc}
-                          </p>
-                        </div>
-                      )}
-                      {fetchAllContent.map((content) => (
-                        <div key={content.id} className="content-item">
-                          <p>
-                            <strong>Content Name:</strong> {content.contentName}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
+                  {videoSource && (
+                    <PlayerSimple
+                      ref={videoRef}
+                      src={videoSource}
+                      playVideo={playVideo} // Pass the play state to the PlayerSimple
+                    />
                   )}
                   {/*-------------------- vedioplayer end----------------*/}
                 </div>
@@ -1721,37 +1443,6 @@ const Course = () => {
                           </td>
                         </tr>
                       ))}
-                      {/* {materialData && materialData.length > 0 ? (
-                        materialData.map((material) => (
-                          <tr key={material.id}>
-                            <td>{material.documentName}</td>
-                            <td>{material.documentType}</td>
-                            <td>
-                              {material.file && (
-                                <a
-                                  href={material.file}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <FaFileAlt />
-                                </a>
-                              )}
-                            </td>
-                            <td>
-                              <button
-                                className="btn btn-warning"
-                                onClick={() => handelfetchMaterial(material.id)}
-                              >
-                                <FaEdit />
-                              </button>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="4">No material available.</td>
-                        </tr>
-                      )} */}
                     </tbody>
                   </table>
                 </div>
