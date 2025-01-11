@@ -194,9 +194,9 @@ const Coursecategory = () => {
     setCurrentPage(1);
   };
   const filteredData = getAllCourseCatagory?.filter((item) =>
-    item.subCategory?.toLowerCase().includes(search.toLowerCase())
+    item.category?.toLowerCase().includes(search.toLowerCase())
   );
-  const dataToShow = getAllCourseCatagory?.slice(
+  const dataToShow = filteredData?.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -206,12 +206,12 @@ const Coursecategory = () => {
     setonEditing(true);
   };
   const columns = [
-    {
-      name: "Sn",
-      selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      sortable: false,
-      width: "60px",
-    },
+    // {
+    //   name: "Sn",
+    //   selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
+    //   sortable: false,
+    //   width: "60px",
+    // },
     {
       name: "Category",
       selector: (row) => row.category,
@@ -272,7 +272,7 @@ const Coursecategory = () => {
         <div className="row mainbtn mb-0  align-items-center">
           <div className="col-auto d-flex align-items-center">
             <button className="btn btn-primary" onClick={handleShow}>
-              CREATE CATEGORY
+              Create Category
             </button>
           </div>
         </div>
@@ -282,7 +282,7 @@ const Coursecategory = () => {
             <div className="card-body">
               <div className="d-flex justify-content-between mb-3">
                 <h5 className="left-header text-primary">
-                  COURSE CATGORY LIST
+                  Course Category List
                 </h5>
                 <input
                   type="text"
@@ -338,7 +338,7 @@ const Coursecategory = () => {
                 <form onSubmit={handleCategorySubmit}>
                   <div className="form-group mb-3 ">
                     <label htmlFor="category">
-                      <b>Course Category</b>
+                      <b>Category Name</b>
                     </label>
                     <input
                       type="text"
@@ -347,11 +347,12 @@ const Coursecategory = () => {
                       id="category"
                       value={courseCategory.category || ""}
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                   <div className="form-group mb-3 ">
                     <label htmlFor="categoryDesc">
-                      <b>Course Description</b>
+                      <b>Description</b>
                     </label>
                     <input
                       type="text"
@@ -360,11 +361,12 @@ const Coursecategory = () => {
                       id="categoryDesc"
                       value={courseCategory.categoryDesc || ""}
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
-                      {onEditing ? "UPDATE" : "SUBMIT"}
+                      {onEditing ? "Update" : "Submit"}
                     </button>
                   </div>
                 </form>

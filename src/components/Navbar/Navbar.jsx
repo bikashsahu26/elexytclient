@@ -23,6 +23,7 @@ const Navbar = () => {
           <a href="/courseCategory">Category</a>
           <a href="/courseSubcategory">SubCategory</a>
           <a href="/education">Education</a>
+          <a href="/faculty">Faculty</a>
         </div>
       </div>
 

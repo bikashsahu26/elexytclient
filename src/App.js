@@ -10,6 +10,7 @@ import Footer from './components/Footer/Footer';
 import UserLogin from './components/UserLogin/UserLogin';
 import Education from './components/Education/Education';
 import ProfilePage from './components/Profile/ProfilePage';
+import Faculty from './components/Faculty/Faculty';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
       <Route path="/userlogin" element={<UserLogin/>}> </Route>
       <Route path="/education" element={<Education/>}> </Route>
       <Route path="/profile" element={<ProfilePage/>}> </Route>
+      <Route path="/faculty" element={<Faculty/>}> </Route>
 
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>

@@ -1,8 +1,12 @@
 import {
   ADD_COURSE_EDUCATION,
+  CREATE_FACULTY,
   GET_ALL_EDUCATION,
+  GET_ALL_FACULTY,
+  GET_ALL_FACULTY_BY_ID,
   GET_EDUCATION_BY_ID,
   UPDATE_EDUCATION_BY_ID,
+  UPDATE_FACULTY,
 } from "./ActionType";
 
 const initialValue = {
@@ -10,6 +14,10 @@ const initialValue = {
   getAllEducation: [],
   getEducationByID: [],
   updateEducation: [],
+  faculty: [],
+  allFaculty: [],
+  facultyById: [],
+  updateFaculty: [],
 };
 export const authReducer = (store = initialValue, { type, payload }) => {
   if (type === ADD_COURSE_EDUCATION) {
@@ -20,6 +28,14 @@ export const authReducer = (store = initialValue, { type, payload }) => {
     return { ...store, getEducationByID: payload };
   } else if (type === UPDATE_EDUCATION_BY_ID) {
     return { ...store, updateEducation: payload };
+  } else if (type === CREATE_FACULTY) {
+    return { ...store, faculty: payload };
+  } else if (type === GET_ALL_FACULTY) {
+    return { ...store, allFaculty: payload };
+  } else if (type === GET_ALL_FACULTY_BY_ID) {
+    return { ...store, facultyById: payload };
+  } else if (type === UPDATE_FACULTY) {
+    return { ...store, updateFaculty: payload };
   }
   return store;
 };
