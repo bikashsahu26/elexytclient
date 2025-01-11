@@ -109,7 +109,7 @@ const CourseSubcategory = () => {
   const filteredData = allCourseCategory?.filter((item) =>
     item.subCategory?.toLowerCase().includes(search.toLowerCase())
   );
-  const dataToShow = allCourseCategory?.slice(
+  const dataToShow = filteredData?.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -217,12 +217,6 @@ const CourseSubcategory = () => {
   };
   const columns = [
     {
-      name: "Sn",
-      selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-      sortable: false,
-      width: "60px",
-    },
-    {
       name: "Subcategory",
       selector: (row) => row.subCategory,
       sortable: true,
@@ -283,7 +277,7 @@ const CourseSubcategory = () => {
         <div className="row mainbtn mb-0  align-items-center">
           <div className="col-auto d-flex align-items-center">
             <button className="btn btn-primary" onClick={handleShow}>
-              CREATE SUB CATEGORY
+              Create Sub_Category
             </button>
           </div>
         </div>
@@ -292,9 +286,7 @@ const CourseSubcategory = () => {
           <div className="card3">
             <div className="card-body">
               <div className="d-flex justify-content-between mb-3">
-                <h5 className="left-header text-primary">
-                  COURSE SUBCATAGORY LIST
-                </h5>
+                <h5 className="left-header text-primary">Subcategory List</h5>
                 <input
                   type="text"
                   value={search}
@@ -357,6 +349,7 @@ const CourseSubcategory = () => {
                       name="subCategory"
                       value={courseSubCategory.subCategory || ""}
                       onChange={handleSubInputChange}
+                      required
                     />
                   </div>
                   <div className="form-group mb-3 ">
@@ -370,11 +363,12 @@ const CourseSubcategory = () => {
                       name="subCategoryDesc"
                       value={courseSubCategory.subCategoryDesc || ""}
                       onChange={handleSubInputChange}
+                      required
                     />
                   </div>
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
-                      {onEditing ? "UPDATE" : "SUBMIT"}
+                      {onEditing ? "Update" : "Submit"}
                     </button>
                   </div>
                 </form>

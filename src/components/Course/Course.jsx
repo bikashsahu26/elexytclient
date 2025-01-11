@@ -25,11 +25,13 @@ import {
 
 import Navbar from "../Navbar/Navbar";
 import { SiAirplayvideo } from "react-icons/si";
-import { FaEdit, FaFileAlt, FaPause } from "react-icons/fa";
+import { FaEdit, FaEye, FaFileAlt, FaPause } from "react-icons/fa";
 import ReactPlayer from "react-player";
 import Swal from "sweetalert2";
 import { IoIosFastforward, IoIosRewind, IoMdPlay } from "react-icons/io";
 import JoditEditor from "jodit-react";
+import { getAllFaculty } from "../../Redux/Auth/Action";
+import DataTable from "react-data-table-component";
 
 const Course = () => {
   const dispatch = useDispatch();
@@ -51,6 +53,8 @@ const Course = () => {
     getFee,
     fetchFeeById,
   } = useSelector((store) => store.course);
+
+  const { allFaculty } = useSelector((store) => store.education);
   //course create show in card and edit start---------------------
   const [course, setcourse] = useState({
     id: "",
@@ -95,13 +99,14 @@ const Course = () => {
     dispatch(getAllCourse());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   dispatch(getAllCourseCategory());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getAllCourseCategory());
+    dispatch(getCourseSubCategory());
+  }, [dispatch]);
 
-  // useEffect(() => {
-  //   dispatch(getCourseSubCategory());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getAllFaculty());
+  }, [dispatch]);
 
   useEffect(() => {
     if (show) {
@@ -149,7 +154,6 @@ const Course = () => {
   // };
   const handleInputChange = (e) => {
     const { name, value, type, files } = e.target;
-
     if (type === "file" && files.length > 0) {
       const thumbnail = files[0];
       const validImageTypes = [
@@ -187,18 +191,10 @@ const Course = () => {
       if (value.endsWith(" ")) {
         trimmedValue += " ";
       }
-      // const regex = /^[A-Za-z\s]*$/;
-      // if (regex.test(trimmedValue)) {
-      //   setcourse({ ...course, [name]: trimmedValue });
-      // }
       if (trimmedValue) {
         setcourse({ ...course, [name]: trimmedValue });
       } else {
-        // alert(
-        //   "Invalid file type! Please select a video file (MP4, MKV, AVCHD)."
-        // );
         alert(`${name} cannot be empty.`);
-
         return;
       }
 
@@ -232,92 +228,10 @@ const Course = () => {
   };
 
   // Filter the courses to show only the selected one
-  const selectedCourseData = getallCourse.find(
-    (course) => course.courseName === selectedCourse
-  );
+  // const selectedCourseData = getallCourse.find(
+  //   (course) => course.courseName === selectedCourse
+  // );
 
-  // const handleCourseSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: onEditing
-  //       ? "You want to update the course?"
-  //       : "Are you sure you want to add this course?",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonColor: "#3085d6",
-  //     cancelButtonColor: "#d33",
-  //     confirmButtonText: onEditing ? "Yes, update it!" : "Yes, add it!",
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       handleShow();
-
-  //       const formData = new FormData();
-  //       if (course.thumbnail) {
-  //         formData.append("file", course.thumbnail);
-  //       }
-
-  //       // formData.append("file", course.thumbnail);
-  //       formData.append(
-  //         "courseDto",
-  //         new Blob([JSON.stringify(course)], {
-  //           type: "application/json",
-  //         })
-  //       );
-
-  //       if (onEditing) {
-  //         dispatch(updateCourse(fetchCourse.id, formData))
-  //           .then(() => {
-  //             Swal.fire({
-  //               title: "Updated!",
-  //               text: "Your course has been updated.",
-  //               icon: "success",
-  //             }).then(() => {
-  //               handleClose();
-  //               dispatch(getAllCourse());
-  //               setonEditing(false);
-  //               setcourse("");
-  //               handleResetThumbnailfield();
-  //             });
-  //           })
-  //           .catch(() => {
-  //             Swal.fire({
-  //               title: "Error!",
-  //               text: "There was an error updating the course. Please try again.",
-  //               icon: "error",
-  //             });
-  //           });
-  //       } else {
-  //         dispatch(addCourse(formData))
-  //           .then(() => {
-  //             Swal.fire({
-  //               title: "Added!",
-  //               text: "Your course has been added successfully.",
-  //               icon: "success",
-  //             }).then(() => {
-  //               dispatch(getAllCourse());
-  //               setShow(false);
-  //               handleResetThumbnailfield();
-  //             });
-  //           })
-  //           .catch(() => {
-  //             Swal.fire({
-  //               title: "Error!",
-  //               text: "There was an error adding the course. Please try again.",
-  //               icon: "error",
-  //             });
-  //           });
-  //       }
-  //     } else {
-  //       Swal.fire({
-  //         title: "Cancelled",
-  //         text: "No changes were made.",
-  //         icon: "info",
-  //       });
-  //     }
-  //   });
-  // };
   const handleCourseSubmit = (e) => {
     e.preventDefault();
 
@@ -415,8 +329,229 @@ const Course = () => {
       }
     });
   };
+  // const handleFilter = () => {
+  //   let filtered = getallCourse;
+
+  //   // // Apply search filter
+  //   // if (search) {
+  //   //   filtered = filtered.filter(
+  //   //     (item) =>
+  //   //       item.courseName?.toLowerCase().includes(search.toLowerCase()) ||
+  //   //       item.category?.toLowerCase().includes(search.toLowerCase()) ||
+  //   //       item.creator?.toLowerCase().includes(search.toLowerCase())
+  //   //   );
+  //   // }
+
+  //   // Apply Category filter
+  //   if (category) {
+  //     filtered = filtered.filter((item) => item.category === category);
+  //   }
+
+  //   // Apply SubCategory filter
+  //   if (subCategory) {
+  //     filtered = filtered.filter((item) => item.subCategory === subCategory);
+  //   }
+
+  //   // Apply Faculty filter
+  //   if (faculty) {
+  //     filtered = filtered.filter((item) => item.creator === faculty);
+  //   }
+
+  //   // Update filtered course data
+  //   setFilteredCourseData(filtered);
+  // };
+
+  const [search, setSearch] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [faculty, setFaculty] = useState("");
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [filteredData, setFilteredData] = useState(getallCourse);
+  const [selectedCourseData, setSelectedCourseData] = useState(null); // Stores course details for the card
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleSubCategoryChange = (e) => {
+    setSubCategory(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleFacultyChange = (e) => {
+    setFaculty(e.target.value);
+    setCurrentPage(1);
+  };
+
+  // course based on category, subCategory, faculty, and search
+  useEffect(() => {
+    // console.log("Filtering with:", { category, subCategory, faculty, search });
+    // console.log("getallCourse:", getallCourse);
+
+    let filtered = getallCourse;
+
+    if (category) {
+      filtered = filtered.filter((item) => item.category === category);
+    }
+
+    if (subCategory) {
+      filtered = filtered.filter((item) => item.subCategory === subCategory);
+    }
+
+    if (faculty) {
+      filtered = filtered.filter((item) => item.creator === faculty);
+    }
+
+    if (search) {
+      filtered = filtered.filter(
+        (item) =>
+          item.courseName.toLowerCase().includes(search.toLowerCase()) ||
+          item.category.toLowerCase().includes(search.toLowerCase()) ||
+          item.creator.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    setFilteredData(filtered);
+  }, [category, subCategory, faculty, search, getallCourse]);
+
+  // const handleFilter = (e) => {
+  //   e.preventDefault();
+
+  //   // Filter the data based on the selected values
+  //   let filtered = getallCourse;
+
+  //   if (category) {
+  //     filtered = filtered.filter((item) => item.categoryId === category);
+  //   }
+
+  //   if (subCategory) {
+  //     filtered = filtered.filter((item) => item.subCategoryId === subCategory);
+  //   }
+
+  //   if (faculty) {
+  //     filtered = filtered.filter((item) => item.facultyName === faculty);
+  //   }
+
+  //   setFilteredData(filtered); // Set filtered data state
+  // };
+  // const dataToShow = filteredData
+  //   .filter(
+  //     (item) =>
+  //       item.courseName?.toLowerCase().includes(search.toLowerCase()) ||
+  //       item.category?.toLowerCase().includes(search.toLowerCase()) ||
+  //       item.creator?.toLowerCase().includes(search.toLowerCase())
+  //   )
+  //   .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   //course create show in card and edit end
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const handleRowsPerPageChange = (newPerPage) => {
+    setRowsPerPage(newPerPage);
+    setCurrentPage(1);
+  };
+  const handleSearch = (event) => {
+    setSearch(event.target.value);
+    setCurrentPage(1);
+  };
+  // const filteredData = getallCourse?.filter(
+  //   (item) =>
+  //     item.courseName?.toLowerCase().includes(search.toLowerCase()) ||
+  //     item.category?.toLowerCase().includes(search.toLowerCase()) ||
+  //     item.creator?.toLowerCase().includes(search.toLowerCase())
+  // );
+
+  const dataToShow = filteredData?.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+  // const handleViewDetails = (courseId) => {
+  //   const courseDetails = getallCourse.find((course) => course.id === courseId);
+
+  //   if (courseDetails) {
+  //     setSelectedCourseData(courseDetails);
+  //     setShowCard(true);
+  //     //  const fee = getFee.find((fee) => fee.courseId === courseDetails.id);
+  //     //     setFeeExists(fee ? true : false);
+  //   } else {
+  //     setSelectedCourseData(null);
+  //     setShowCard(false);
+  //   }
+  // };
+
+  const columns = [
+    {
+      name: "CourseName",
+      selector: (row) => row.courseName,
+      sortable: true,
+    },
+
+    {
+      name: "Category",
+      selector: (row) => row.category,
+      sortable: true,
+    },
+
+    {
+      name: "Creator",
+      selector: (row) => row.creator,
+      sortable: true,
+    },
+
+    {
+      name: "SubCategory",
+      selector: (row) => row.subCategory,
+      sortable: true,
+    },
+    {
+      name: "Action",
+      selector: (row) => row,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          <button
+            type="button"
+            className="btn btn-warning text-white btn-sm me-2"
+            onClick={() => handleViewDetails(row.id)}
+          >
+            <FaEye />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  const customStyles = {
+    headCells: {
+      style: {
+        backgroundColor: "#478CCF",
+        color: "white",
+        fontSize: "14px",
+        fontWeight: "bold",
+      },
+    },
+    rows: {
+      style: {
+        minHeight: "50px",
+        color: "black",
+        "&:nth-of-type(odd)": {
+          backgroundColor: "white",
+        },
+        "&:nth-of-type(even)": {
+          backgroundColor: " lightgrey",
+        },
+        "&:hover": {
+          backgroundColor: "#f2f2f2",
+        },
+      },
+    },
+  };
+
   // -------------------------------------------------------------------------------
   // content fetch and to play the vedio start
   const [showContentmodal, setShowContentmodal] = useState(false);
@@ -477,9 +612,6 @@ const Course = () => {
       if (value.endsWith(" ")) {
         trimmedValue += " ";
       }
-
-      // const regex = /^[A-Za-z\s]*$/; //allow letters and spaces contentName
-
       if (trimmedValue) {
         updatedContent[name] = trimmedValue;
       } else {
@@ -493,7 +625,14 @@ const Course = () => {
 
     setCourseContent(updatedContent);
   };
-
+  const fileTypeMap = {
+    mp4: "video/mp4",
+    mkv: "video/x-matroska",
+    avchd: "video/mp2t",
+  };
+  const getVedioFileAcceptType = () => {
+    return fileTypeMap[courseContent.contentType] || "";
+  };
   useEffect(() => {
     if (fetchContentwithId) {
       setCourseContent((prevData) => ({
@@ -713,6 +852,14 @@ const Course = () => {
       }));
     }
   }, [fetchMaterialById]);
+  useEffect(() => {
+    if (fetchMaterialById) {
+      setCourseDocument({
+        ...fetchMaterialById,
+        file: fetchMaterialById.file || null,
+      });
+    }
+  }, [fetchMaterialById]);
 
   const handleMeterialModalShow = () => {
     setShowMeterialmodal(true);
@@ -770,14 +917,6 @@ const Course = () => {
       if (value.endsWith(" ")) {
         trimmedValue += " "; // only one trailing space
       }
-
-      // const regex = /^[A-Za-z\s]*$/; //  alphabets and spaces allowed (no special characters)
-      // if (regex.test(trimmedValue)) {
-      //   setCourseDocument({
-      //     ...courseDocument,
-      //     [name]: trimmedValue,
-      //   });
-      // }
       if (trimmedValue) {
         setCourseDocument({
           ...courseDocument,
@@ -785,6 +924,7 @@ const Course = () => {
         });
       } else {
         alert("Document name can't be Empty.");
+        return;
       }
     } else {
       setCourseDocument({
@@ -793,30 +933,38 @@ const Course = () => {
       });
     }
   };
+  const handleDocumentTypeChange = (event) => {
+    const { name, value } = event.target;
+    setCourseDocument((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const getFileAcceptType = (type) => {
+    switch (type) {
+      case "pdf":
+        return ".pdf";
+      case "xls":
+        return ".xls";
+      case "xlsx":
+        return ".xlsx";
+      case "doc":
+        return ".doc";
+      case "docx":
+        return ".docx";
+      case "txt":
+        return ".txt";
+      case "ppt":
+        return ".ppt";
+      case "pptx":
+        return ".pptx";
+      default:
+        return ""; // no type is selected
+    }
+  };
 
-  // const handleMaterialChange = (e) => {
-  //   const { name, value, type, files } = e.target;
-
-  //   if (type === "file" || "") {
-  //     setCourseDocument({
-  //       ...courseDocument,
-  //       [name]: files[0],
-  //     });
-  //   } else {
-  //     setCourseDocument({
-  //       ...courseDocument,
-  //       [name]: value,
-  //     });
-  //   }
-  // };
   const fileInputRef = useRef(null);
 
-  // const handleResetMaterialfield = () => {
-  //   // Reset the file input field manually using the ref
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.value = ""; // Clear the file input
-  //   }
-  // };
   const handleResetMaterialfield = () => {
     setCourseDocument((prevDocument) => ({
       ...prevDocument,
@@ -902,6 +1050,8 @@ const Course = () => {
   const [showFeeModal, setshowFeeModal] = useState(false);
   const [prevCourseId, setPrevCourseId] = useState(null);
 
+  // const feeExists = getFee && getFee.courseId === courseDetails?.id;
+
   const [courseFee, setCourseFee] = useState({
     courseFeeId: "",
     courseId: "",
@@ -911,6 +1061,11 @@ const Course = () => {
 
   const handleFeeModalShow = () => {
     setshowFeeModal(true);
+    setCourseFee({
+      courseId: selectedCourseData?.id || "", // Ensure courseId is set
+      courseFee: "",
+      courseSubscriptionPeriod: "",
+    });
   };
 
   const selectedCourseFee = getallCourse.find(
@@ -945,33 +1100,11 @@ const Course = () => {
     }
   }, [fetchFeeById]);
 
-  // useEffect(() => {
-  //   if (courseFee && courseFee.courseId) {
-  //     dispatch(getCourseFee(courseFee.courseId));
-  //   }
-  // }, [dispatch, courseFee]);
-
   const handleCloseFeeModal = () => {
     setshowFeeModal(false);
     setonEditing(false);
     setCourseFee("");
   };
-
-  // const handelfetchFee = (courseId) => {
-  //   dispatch(getCourseFeeById(courseId)).then(() => {
-  //     if (fetchFeeById) {
-  //       setCourseFee((prevData) => ({
-  //         ...prevData,
-  //         courseId: fetchFeeById.courseId || "",
-  //         courseFeeId: fetchFeeById.courseFeeId || "",
-  //         courseFee: fetchFeeById.courseFee || "",
-  //         courseSubscriptionPeriod: fetchFeeById.courseSubscriptionPeriod || "",
-  //       }));
-  //       setonEditing(true);
-  //       setshowFeeModal(true);
-  //     }
-  //   });
-  // };
 
   const handelfetchFee = (courseId) => {
     if (courseId) {
@@ -989,14 +1122,6 @@ const Course = () => {
       [name]: value,
     }));
   };
-
-  // const handleInputFeeChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setCourseFee((prevData) => ({
-  //     ...prevData,
-  //     [name]: value,
-  //   }));
-  // };
 
   const handleFeeSubmit = (e) => {
     e.preventDefault();
@@ -1037,19 +1162,38 @@ const Course = () => {
     });
   };
 
-  const handleCourseChange = (event) => {
-    const value = event.target.value;
-    setSelectedCourse(value);
+  const [contentData, setContentData] = useState([]);
+  const [materialData, setMaterialData] = useState([]);
+  const [CourseFeesData, setCourseFeesData] = useState([]);
 
-    // Find the selected course from the array
-    const selectedCourseDetails = getallCourse.find(
-      (course) => course.courseName === value
-    );
+  const handleViewDetails = (courseId) => {
+    const courseDetails = getallCourse.find((course) => course.id === courseId);
 
-    if (selectedCourseDetails) {
-      setCourseDetails(selectedCourseDetails);
+    if (courseDetails) {
+      setSelectedCourseData(courseDetails);
       setShowCard(true);
+
+      dispatch(getCourseFeeById(courseId)).then((feeData) => {
+        setCourseFeesData({ ...feeData, courseId: courseId });
+      });
+
+      dispatch(getAllContent(courseId)).then((response) => {
+        if (response && Array.isArray(response)) {
+          setContentData(response); // Only set if it's an array
+        }
+      });
+
+      dispatch(getAllMaterial(courseId)).then((response) => {
+        if (response && Array.isArray(response)) {
+          setMaterialData(response);
+        }
+      });
+
+      // .catch((error) => {
+      //   console.error("Error  course :", error);
+      // });
     } else {
+      setSelectedCourseData(null);
       setShowCard(false);
     }
   };
@@ -1059,7 +1203,7 @@ const Course = () => {
       <Navbar />
       <div className="container-fluid mt-4">
         <div className="container">
-          <div className="row justify-content-center mb-3">
+          {/* <div className="row justify-content-center mb-3">
             <div className="col-md-4">
               <select
                 name="course"
@@ -1079,11 +1223,134 @@ const Course = () => {
             </div>
             <div className="col-auto">
               <button className="btn btn-primary ms-2" onClick={handleShow}>
-                CREATE COURSE
+                Create Course
+              </button>
+            </div>
+          </div> */}
+
+          <div>
+            <div className="row mb-3 justify-content-between align-items-center">
+              {/* Category Dropdown */}
+
+              <div className="col-sm-3 d-flex align-items-center">
+                <label className="custom-label me-2">
+                  <b>Category</b>
+                </label>
+                <select
+                  onChange={handleCategoryChange}
+                  value={category}
+                  className="form-select"
+                >
+                  <option value="">Choose...</option>
+                  {getAllCourseCatagory &&
+                    getAllCourseCatagory.map((category, index) => (
+                      <option key={index} value={category.name}>
+                        {category.category}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="col-sm-3 d-flex align-items-center">
+                <label className="custom-label me-2">
+                  <b>SubCategory</b>
+                </label>
+                <select
+                  name="subCategory"
+                  id="subCategory"
+                  className="form-select"
+                  value={subCategory}
+                  onChange={handleSubCategoryChange}
+                >
+                  <option value="">Choose...</option>
+                  {allCourseCategory &&
+                    allCourseCategory.map((subCategory, index) => (
+                      <option key={index} value={subCategory.name}>
+                        {subCategory.subCategory}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              {/* Faculty Dropdown */}
+              <div className="col-sm-3 d-flex align-items-center">
+                <label className="custom-label me-2">
+                  <b>Faculty</b>
+                </label>
+                <select
+                  name="faculty"
+                  id="faculty"
+                  className="form-select"
+                  value={faculty}
+                  onChange={handleFacultyChange}
+                >
+                  <option value="">Choose...</option>
+                  {allFaculty &&
+                    allFaculty.map((faculty, id) => (
+                      <option key={id} value={faculty.name}>
+                        {faculty.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              {/* Filter and Create Course Buttons */}
+              {/* <div className="col-auto d-flex align-items-center">
+                <button
+                  type="submit"
+                  className="btn submit btn-warning ms-2"
+                  // onClick={handleFilter}
+                >
+                  Filter
+                </button>
+              </div> */}
+
+              <button
+                className="btn col-auto btn-primary ms-2"
+                onClick={handleShow}
+              >
+                Create Course
               </button>
             </div>
           </div>
         </div>
+
+        {/* {dataToShow && */}
+        {dataToShow.length > 0 ? (
+          <div className="card course-card">
+            <div className="card-body">
+              <div className="d-flex justify-content-between mb-3">
+                <h5 className="left-header text-primary">Course List </h5>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={handleSearch}
+                  placeholder="Search"
+                  className="form-control search-input w-25"
+                />
+              </div>
+              {/* datatable */}
+              <DataTable
+                columns={columns}
+                data={dataToShow || []}
+                pagination
+                paginationServer
+                paginationTotalRows={filteredData.length || 0}
+                onChangePage={handlePageChange}
+                onChangeRowsPerPage={handleRowsPerPageChange}
+                className="responsive-table"
+                customStyles={customStyles}
+              />{" "}
+            </div>
+          </div>
+        ) : (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: "200px" }}
+          >
+            <p>No data available, create the Education .</p>
+          </div>
+        )}
         {/* details table on change with card  */}
         {showCard && (
           <div className="col-md-12 mb-4">
@@ -1198,7 +1465,7 @@ const Course = () => {
                     <div className="col-md-2 d-flex justify-content-center">
                       <button
                         className="btn btn-warning text-white  btn-sm"
-                        onClick={() => handelfetchCourse(courseDetails.id)}
+                        onClick={() => handelfetchCourse(selectedCourseData.id)}
                       >
                         Modify
                       </button>
@@ -1265,6 +1532,66 @@ const Course = () => {
                           </td>
                         </tr>
                       ))}
+                      {/* {contentData && contentData.length > 0 ? (
+                        contentData.map((content) => (
+                          <tr key={content.id}>
+                            <td>{content.contentName}</td>
+                            <td>{content.contentDuration}</td>
+                            <td>{content.contentType}</td>
+                            <td>
+                              {content.videoUrl && (
+                                <button className="btn btn-warning">
+                                  <a
+                                    href={content.videoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    <SiAirplayvideo />
+                                  </a>
+                                </button>
+                              )}
+                            </td>
+                            <td>
+                              <button className="btn btn-warning">
+                                <FaEdit />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="5">No content available.</td>
+                        </tr>
+                      )} */}
+
+                      {/* {contentData.map((content) => (
+                        <tr key={content.id}>
+                          <td>{content.contentName}</td>
+                          <td>{content.contentDuration}</td>
+                          <td>{content.contentType}</td>
+                          <td>
+                            <button
+                              className="btn btn-warning"
+                              // onClick={() =>handleVideoClick(content.contentUploadPath)}
+                              onClick={() =>
+                                handleVideoClick(
+                                  "./videos/Java - Comments ( 360 X 640 ).mp4"
+                                )
+                              }
+                            >
+                              <SiAirplayvideo />{" "}
+                            </button>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-warning"
+                              onClick={() => handelfetchContent(content.id)}
+                            >
+                              <FaEdit />
+                            </button>
+                          </td>
+                        </tr>
+                      ))} */}
                     </tbody>
                   </table>
                   {/* ---------------------vedioplayer start--------------*/}
@@ -1378,11 +1705,6 @@ const Course = () => {
                     <tbody>
                       {fetchAllMaterial.map((material) => (
                         <tr key={material.id}>
-                          {/* <td>{material.courseId}</td> */}
-                          {/* <td>
-                            {course[material.courseId]?.courseName ||
-                              "Loading..."}
-                          </td> */}
                           <td>{material.documentName}</td>
                           <td>{material.documentType}</td>
                           <td>
@@ -1399,6 +1721,37 @@ const Course = () => {
                           </td>
                         </tr>
                       ))}
+                      {/* {materialData && materialData.length > 0 ? (
+                        materialData.map((material) => (
+                          <tr key={material.id}>
+                            <td>{material.documentName}</td>
+                            <td>{material.documentType}</td>
+                            <td>
+                              {material.file && (
+                                <a
+                                  href={material.file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <FaFileAlt />
+                                </a>
+                              )}
+                            </td>
+                            <td>
+                              <button
+                                className="btn btn-warning"
+                                onClick={() => handelfetchMaterial(material.id)}
+                              >
+                                <FaEdit />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="4">No material available.</td>
+                        </tr>
+                      )} */}
                     </tbody>
                   </table>
                 </div>
@@ -1413,19 +1766,28 @@ const Course = () => {
                   {" "}
                   <div className="row g-3 justify-content-end">
                     <div className="col-md-2 d-flex justify-content-end">
-                      <button
-                        className="btn btn-primary text-white  btn-sm"
-                        onClick={handleFeeModalShow}
-                      >
-                        Add Fees
-                      </button>
+                      {/* {selectedCourseData && !getFee && (
+                        <button
+                          className="btn btn-primary text-white btn-sm"
+                          onClick={handleFeeModalShow}
+                        >
+                          Add Fees
+                        </button>
+                      )} */}
+                      {!getFee || getFee.courseId !== selectedCourseData?.id ? (
+                        <button
+                          className="btn btn-primary text-white btn-sm"
+                          onClick={handleFeeModalShow}
+                        >
+                          Add Fees
+                        </button>
+                      ) : null}
                     </div>
                   </div>
                   <br />
                   <table className="table table-hover">
                     <thead className="table-primary">
                       <tr>
-                        {/* <th>Course</th> */}
                         <th>Fees</th>
                         <th>Period</th>
                         <th>Action</th>
@@ -1433,21 +1795,27 @@ const Course = () => {
                     </thead>
                     <tbody>
                       {selectedCourseData &&
-                        getFee &&
-                        getFee.courseId === selectedCourseData.id && (
-                          <tr key={getFee.courseId}>
-                            <td>{getFee.courseFee}</td>
-                            <td>{getFee.courseSubscriptionPeriod}</td>
-                            <td>
-                              <button
-                                className="btn btn-warning"
-                                onClick={() => handelfetchFee(getFee.courseId)}
-                              >
-                                <FaEdit />
-                              </button>
-                            </td>
-                          </tr>
-                        )}
+                      getFee &&
+                      getFee.courseId === selectedCourseData.id ? (
+                        <tr key={getFee.courseId}>
+                          <td>{getFee.courseFee}</td>
+                          <td>{getFee.courseSubscriptionPeriod}</td>
+                          <td>
+                            <button
+                              className="btn btn-warning"
+                              onClick={() => handelfetchFee(getFee.courseId)}
+                            >
+                              <FaEdit />
+                            </button>
+                          </td>
+                        </tr>
+                      ) : (
+                        <tr>
+                          <td colSpan="3" className="text-center">
+                            No fee data available for this course.
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1595,9 +1963,6 @@ const Course = () => {
                           selectedCourseContent?.courseName || "Course"
                         } Content`}
                   </b>
-                  {/* <b>
-                    {onEditing ? "Update Course Content" : "Add Course Content"}
-                  </b> */}
                 </h5>
                 <button
                   type="button"
@@ -1608,29 +1973,6 @@ const Course = () => {
               <div className="modal-body">
                 <form onSubmit={handleSubmitContent}>
                   <div className="row g-3">
-                    {/* <div className="col-md-6">
-                      <label htmlFor="courseId" className="form-label">
-                        <b> Course Name</b>
-                      </label>
-                      <div>
-                        
-                        <select
-                          name="courseId"
-                          value={courseContent.courseId || ""}
-                          id="courseId"
-                          className="form-select"
-                          disabled
-                          required
-                        >
-                          <option value={courseContent.courseId || ""}>
-                            {selectedCourseContent
-                              ? selectedCourseContent.courseName
-                              : "Choose..."}
-                          </option>
-                        </select>
-                      </div>
-                    </div> */}
-
                     <div className="col-md-6">
                       {/* Hidden input for courseId, passed to backend */}
                       <input
@@ -1695,6 +2037,7 @@ const Course = () => {
                           className="form-control"
                           type="file"
                           onChange={handleInputChangeContent}
+                          accept={getVedioFileAcceptType()} // Dynamically set the accept attribute
                           name="file"
                           id="file"
                           required
@@ -1704,7 +2047,7 @@ const Course = () => {
                   </div>
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
-                      {onEditing ? "UPDATE" : "SUBMIT"}
+                      {onEditing ? "Update" : "Submit"}
                     </button>
                   </div>
                 </form>
@@ -1811,20 +2154,28 @@ const Course = () => {
                     </div>
                   </div>
                   <div className="row g-3">
-                    <div className="form-group col-md-6 ">
+                    <div className="form-group col-md-6">
                       <label htmlFor="creator">
                         <b>Creator</b>
                       </label>
-                      <input
-                        type="text"
-                        className="form-control"
+                      <select
+                        className="form-select"
                         name="creator"
                         id="creator"
                         value={course.creator || ""}
                         onChange={handleInputChange}
                         required
-                      />
+                      >
+                        <option value="">Choose...</option>
+                        {allFaculty &&
+                          allFaculty.map((faculty, id) => (
+                            <option key={id} value={faculty.name}>
+                              {faculty.name}
+                            </option>
+                          ))}
+                      </select>
                     </div>
+
                     <div className="form-group col-md-6 ">
                       <label htmlFor="creator">
                         <b>Thumbnail</b>
@@ -1833,6 +2184,7 @@ const Course = () => {
                         className="form-control"
                         type="file"
                         ref={thumbnailInputRef || ""}
+                        accept="image/jpeg, image/png , image/jpg, image/gif, image/webp"
                         name="thumbnail"
                         id="thumbnail"
                         // value={course.thumbnail || ""}
@@ -1902,20 +2254,12 @@ const Course = () => {
                         //   readonly: false,
                         // }}
                       />
-                      {/* <textarea
-                        className="form-control"
-                        name="description"
-                        id="description"
-                        value={course.description || ""}
-                        onChange={handleInputChange}
-                        required
-                      /> */}
                     </div>
                   </div>
                   <br />
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
-                      {onEditing ? "UPDATE" : "SUBMIT"}
+                      {onEditing ? "Update" : "Submit"}
                     </button>
                   </div>
                 </form>
@@ -1943,11 +2287,6 @@ const Course = () => {
                           selectedCourseData?.courseName || "Course"
                         } Material`}
                   </b>
-                  {/* <b>
-                    {onEditing
-                      ? "Update Course Material"
-                      : "Add Course Material"}
-                  </b> */}
                 </h5>
                 <button
                   type="button"
@@ -1989,7 +2328,8 @@ const Course = () => {
                       <select
                         name="documentType"
                         value={courseDocument.documentType || ""}
-                        onChange={handleMaterialChange}
+                        onChange={handleDocumentTypeChange}
+                        //  onChange={handleMaterialChange}
                         id="documentType"
                         className="form-select"
                         required
@@ -2001,6 +2341,8 @@ const Course = () => {
                         <option value="xlsx">Excel.xlsx</option>
                         <option value="docx">Word.docx</option>
                         <option value="doc">Word.doc</option>
+                        <option value="ppt">PowerPoint.ppt</option>
+                        <option value="pptx">PowerPoint.pptx</option>
                       </select>
                     </div>
                     <div className="col-md-4">
@@ -2013,17 +2355,19 @@ const Course = () => {
                         ref={fileInputRef}
                         // value={courseDocument.file || ""}
                         onChange={handleMaterialChange}
+                        // onChange={handleDocumentTypeChange}
+                        // accept=".pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .pptx"
+                        accept={getFileAcceptType(courseDocument.documentType)} // dynamically set file accept based on document type
                         name="file"
                         id="file"
                         required
                       />
                     </div>
-                    {/* </div> */}
                   </div>
 
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
-                      {onEditing ? "UPDATE" : "SUBMIT"}
+                      {onEditing ? "Update" : "Submit"}
                     </button>
                   </div>
                 </form>
@@ -2042,7 +2386,6 @@ const Course = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title text-primary">
-                  {/* <b>{onEditing ? "Update Course Fees" : "Add Course Fees"}</b> */}
                   <b>
                     {onEditing
                       ? `Update ${
@@ -2064,34 +2407,8 @@ const Course = () => {
 
                 <form onSubmit={handleFeeSubmit}>
                   <div className="row g-3">
-                    {/* <div className="col-md">
-                      <label htmlFor="courseId" className="form-label">
-                        <b> Course Name</b>
-                      </label>
-
-                      <div>
-
-                        
-                        <select
-                          name="courseId"
-                          value={courseFee.courseId || ""}
-                          id="courseId"
-                          className="form-select"
-                          disabled
-                          required
-                        >
-                          <option value={courseFee.courseId || ""}>
-                            {selectedCourseFee
-                              ? selectedCourseFee.courseName
-                              : "Choose..."}
-                          </option>
-                        </select>
-                      </div>
-                    </div> */}
-
                     <div className="col-md-6">
                       {/* Hidden input for courseId, passed to backend */}
-
                       <input
                         type="hidden"
                         name="courseId"
@@ -2138,7 +2455,7 @@ const Course = () => {
 
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
-                      {onEditing ? "UPDATE" : "SUBMIT"}
+                      {onEditing ? "Update" : "Submit"}
                     </button>
                   </div>
                 </form>

@@ -13,8 +13,6 @@ import Swal from "sweetalert2";
 
 const Education = () => {
   const dispatch = useDispatch();
-  //   const token = localStorage.getItem("token");
-
   const [show, setShow] = useState(false);
   const [onEditing, setonEditing] = useState(false);
 
@@ -48,9 +46,11 @@ const Education = () => {
   const handleClose = () => {
     if (!onEditing) {
       setShow(false);
+      setuserEducation("");
     } else {
       setShow(false);
       setonEditing(false);
+      setuserEducation("");
     }
   };
 
@@ -96,9 +96,9 @@ const Education = () => {
     setCurrentPage(1);
   };
   const filteredData = getAllEducation?.filter((item) =>
-    item.subCategory?.toLowerCase().includes(search.toLowerCase())
+    item.education?.toLowerCase().includes(search.toLowerCase())
   );
-  const dataToShow = getAllEducation?.slice(
+  const dataToShow = filteredData?.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -209,12 +209,12 @@ const Education = () => {
   };
   const columns = [
     {
-      name: "SN",
+      name: "Sn",
       selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
       sortable: false,
     },
     {
-      name: "Betch",
+      name: "Education",
       selector: (row) => row.education,
       sortable: true,
     },
@@ -269,7 +269,7 @@ const Education = () => {
         <div className="row mainbtn mb-0  align-items-center">
           <div className="col-auto d-flex align-items-center">
             <button className="btn btn-primary" onClick={handleShow}>
-              CREATE EDUCATION
+              Create Education
             </button>
           </div>
         </div>
@@ -278,9 +278,7 @@ const Education = () => {
           <div className="card3">
             <div className="card-body">
               <div className="d-flex justify-content-between mb-3">
-                <h5 className="left-header text-primary">
-                  COURSE EDUCATION LIST
-                </h5>
+                <h5 className="left-header text-primary">Education List </h5>
                 <input
                   type="text"
                   value={search}
@@ -308,7 +306,7 @@ const Education = () => {
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: "200px" }}
           >
-            <p>No data available, create the task.</p>
+            <p>No data available, create the Education .</p>
           </div>
         )}
         {/* modal */}
@@ -344,12 +342,13 @@ const Education = () => {
                       id="education"
                       value={userEducation.education || ""}
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
 
                   <div className="text-center">
                     <button type="submit" className="btn btn-primary">
-                      {onEditing ? "UPDATE" : "SUBMIT"}
+                      {onEditing ? "Update" : "Submit"}
                     </button>
                   </div>
                 </form>
