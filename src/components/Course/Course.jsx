@@ -263,10 +263,18 @@ const Course = () => {
           "courseDto",
           new Blob([JSON.stringify(course)], { type: "application/json" })
         );
-
         if (onEditing) {
           dispatch(updateCourse(fetchCourse.id, formData))
             .then(() => {
+              // const updatedCategoryName = categoryMap[updatedCourse.category]; // categoryMap should map category IDs to names
+              // const updatedSubCategoryName =
+              //   subCategoryMap[updatedCourse.subCategory]; // subCategoryMap should map subcategory IDs to names
+
+              // const updatedCourseData = {
+              //   ...updatedCourse,
+              //   category: updatedCategoryName, // Set the category name instead of the ID
+              //   subCategory: updatedSubCategoryName,
+              // };
               Swal.fire({
                 title: "Updated!",
                 text: successMessage,
@@ -279,6 +287,12 @@ const Course = () => {
                 setonEditing(false);
                 setcourse("");
                 handleResetThumbnailfield();
+                if (course.id === selectedCourseData?.id) {
+                  setSelectedCourseData(course);
+                  // setSelectedCourseData(course);
+
+                  setShowCard(true);
+                }
               });
             })
             .catch((error) => {
@@ -496,6 +510,10 @@ const Course = () => {
   }, [selectedCourseContent]); // to run whenever selectedCourseContent changes
 
   const handleContentModalShow = () => {
+    setCourseContent({
+      ...courseContent,
+      courseId: selectedCourseData?.id || "", // Set the selected course ID
+    });
     setShowContentmodal(true);
   };
 
@@ -625,13 +643,16 @@ const Course = () => {
           formData.append("file", courseContent.file);
         }
 
-        formData.append("id", courseContent.id);
-        formData.append("courseId", courseContent.courseId);
-        formData.append("contentName", courseContent.contentName);
-        formData.append("contentDuration", courseContent.contentDuration);
-        formData.append("contentUploadPath", courseContent.contentUploadPath);
-        formData.append("contentFilename", courseContent.contentFilename);
-        formData.append("contentType", courseContent.contentType);
+        formData.append("id", courseContent.id || "");
+        formData.append("courseId", courseContent.courseId || "");
+        formData.append("contentName", courseContent.contentName || "");
+        formData.append("contentDuration", courseContent.contentDuration || "");
+        formData.append(
+          "contentUploadPath",
+          courseContent.contentUploadPath || ""
+        );
+        formData.append("contentFilename", courseContent.contentFilename || "");
+        formData.append("contentType", courseContent.contentType || "");
 
         const actionPromise = onEditing
           ? dispatch(updateCourseContent(courseContent.id, formData))
@@ -639,8 +660,6 @@ const Course = () => {
 
         actionPromise
           .then(() => {
-            dispatch(getAllContent(courseContent.courseId));
-
             Swal.fire({
               title: onEditing ? "Updated!" : "Uploaded!",
               text: onEditing
@@ -648,6 +667,8 @@ const Course = () => {
                 : "Your course content has been submitted.",
               icon: "success",
             }).then(() => {
+              dispatch(getAllContent(courseContent.courseId));
+              setCourseContent("");
               setShowContentmodal(false);
               handleResetContentForm();
               resetFileInput();
@@ -746,6 +767,10 @@ const Course = () => {
   }, [fetchMaterialById]);
 
   const handleMeterialModalShow = () => {
+    setCourseDocument({
+      ...courseDocument,
+      courseId: selectedCourseData?.id || "", // Set the selected course ID
+    });
     setShowMeterialmodal(true);
   };
   const handleCloseMeterialModal = () => {
@@ -885,15 +910,18 @@ const Course = () => {
           formData.append("file", courseDocument.file);
         }
 
-        formData.append("id", courseDocument.id);
-        formData.append("courseId", courseDocument.courseId);
+        formData.append("id", courseDocument.id || "");
+        formData.append("courseId", courseDocument.courseId || "");
         formData.append(
           "documentUploadPath",
-          courseDocument.documentUploadPath
+          courseDocument.documentUploadPath || ""
         );
-        formData.append("documentName", courseDocument.documentName);
-        formData.append("documentFilename", courseDocument.documentFilename);
-        formData.append("documentType", courseDocument.documentType);
+        formData.append("documentName", courseDocument.documentName || "");
+        formData.append(
+          "documentFilename",
+          courseDocument.documentFilename || ""
+        );
+        formData.append("documentType", courseDocument.documentType || "");
 
         const actionPromise = onEditing
           ? dispatch(updateCourseMaterial(courseDocument.id, formData))
@@ -946,9 +974,8 @@ const Course = () => {
   const handleFeeModalShow = () => {
     setshowFeeModal(true);
     setCourseFee({
-      courseId: selectedCourseData?.id || "", // Ensure courseId is set
-      courseFee: "",
-      courseSubscriptionPeriod: "",
+      ...courseContent,
+      courseId: selectedCourseData?.id || "", // Set the selected course ID
     });
   };
 
