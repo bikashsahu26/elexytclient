@@ -114,25 +114,6 @@ const CourseSubcategory = () => {
     currentPage * rowsPerPage
   );
 
-  // const handleSubcategorySubmit = (e) => {
-  //   e.preventDefault();
-  //   if (onEditing) {
-  //     dispatch(
-  //       updateCourseSubCategoryEdit(editSubCategory.id, courseSubCategory)
-  //     ).then(() => {
-  //       handleClose();
-  //       dispatch(getCourseSubCategory());
-  //       setonEditing(false);
-  //       setcourseSubCategory("");
-  //     });
-  //   } else {
-  //     dispatch(addCourseSubCategory(courseSubCategory)).then(() => {
-  //       dispatch(getCourseSubCategory());
-  //       setShow(false);
-  //       setcourseSubCategory("");
-  //     });
-  //   }
-  // };
   const handleSubcategorySubmit = (e) => {
     e.preventDefault();
 
@@ -282,19 +263,19 @@ const CourseSubcategory = () => {
           </div>
         </div>
         {/* data table card3 */}
-        {dataToShow && dataToShow.length > 0 ? (
-          <div className="card3">
-            <div className="card-body">
-              <div className="d-flex justify-content-between mb-3">
-                <h5 className="left-header text-primary">Subcategory List</h5>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={handleSearch}
-                  placeholder="Search"
-                  className="form-control search-input w-25"
-                />
-              </div>
+        <div className="card3">
+          <div className="card-body">
+            <div className="d-flex justify-content-between mb-3">
+              <h5 className="left-header text-primary">Subcategory List</h5>
+              <input
+                type="text"
+                value={search}
+                onChange={handleSearch}
+                placeholder="Search"
+                className="form-control search-input w-25"
+              />
+            </div>
+            {dataToShow && dataToShow.length > 0 ? (
               <DataTable
                 columns={columns}
                 data={dataToShow || []}
@@ -306,16 +287,16 @@ const CourseSubcategory = () => {
                 className="responsive-table"
                 customStyles={customStyles}
               />
-            </div>
+            ) : (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ minHeight: "200px" }}
+              >
+                <p>No data available, create the task.</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "200px" }}
-          >
-            <p>No data available, create the task.</p>
-          </div>
-        )}
+        </div>
         {/* modal */}
         {show && <div className="modal-backdrop fade show"></div>}
         <div

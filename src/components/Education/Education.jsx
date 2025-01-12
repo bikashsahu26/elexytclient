@@ -103,26 +103,6 @@ const Education = () => {
     currentPage * rowsPerPage
   );
 
-  // const handleEducationSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (onEditing) {
-  //     dispatch(updateCourseEducation(getEducationByID.id, userEducation)).then(
-  //       () => {
-  //         handleClose();
-  //         dispatch(getEducation());
-  //         setonEditing(false);
-  //         setuserEducation("");
-  //       }
-  //     );
-  //   } else {
-  //     dispatch(addEducation(userEducation)).then(() => {
-  //       dispatch(getEducation());
-  //       setuserEducation("");
-  //       handleClose();
-  //     });
-  //   }
-  // };
-
   const handleEducationSubmit = (e) => {
     e.preventDefault();
 
@@ -274,20 +254,20 @@ const Education = () => {
           </div>
         </div>
         {/* data table card3 */}
-        {dataToShow && dataToShow.length > 0 ? (
-          <div className="card3">
-            <div className="card-body">
-              <div className="d-flex justify-content-between mb-3">
-                <h5 className="left-header text-primary">Education List </h5>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={handleSearch}
-                  placeholder="Search"
-                  className="form-control search-input w-25"
-                />
-              </div>
-              {/* datatable */}
+        <div className="card3">
+          <div className="card-body">
+            <div className="d-flex justify-content-between mb-3">
+              <h5 className="left-header text-primary">Education List </h5>
+              <input
+                type="text"
+                value={search}
+                onChange={handleSearch}
+                placeholder="Search"
+                className="form-control search-input w-25"
+              />
+            </div>
+            {/* datatable */}
+            {dataToShow && dataToShow.length > 0 ? (
               <DataTable
                 columns={columns}
                 data={dataToShow || []}
@@ -298,17 +278,17 @@ const Education = () => {
                 onChangeRowsPerPage={handleRowsPerPageChange}
                 className="responsive-table"
                 customStyles={customStyles}
-              />{" "}
-            </div>
+              />
+            ) : (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ minHeight: "200px" }}
+              >
+                <p>No data available, create the Education .</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "200px" }}
-          >
-            <p>No data available, create the Education .</p>
-          </div>
-        )}
+        </div>
         {/* modal */}
         {show && <div className="modal-backdrop fade show"></div>}
         <div

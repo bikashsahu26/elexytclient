@@ -84,26 +84,6 @@ const Coursecategory = () => {
     }
   }, [getCoursebyId]);
 
-  // const handleCategorySubmit = (e) => {
-  //   e.preventDefault();
-  //   if (onEditing) {
-  //     dispatch(updateCourseCategory(getCoursebyId.id, courseCategory)).then(
-  //       () => {
-  //         handleClose();
-  //         dispatch(getAllCourseCategory());
-  //         setonEditing(false);
-  //         setcourseCategory("");
-  //       }
-  //     );
-  //   } else {
-  //     dispatch(addCourseCategory(courseCategory)).then(() => {
-  //       dispatch(getAllCourseCategory());
-  //       setShow(false);
-  //       setcourseCategory("");
-  //     });
-  //   }
-  // };
-
   const handleCategorySubmit = (e) => {
     e.preventDefault();
 
@@ -277,22 +257,21 @@ const Coursecategory = () => {
           </div>
         </div>
         {/* data table card3 */}
-        {dataToShow && dataToShow.length > 0 ? (
-          <div className="card3">
-            <div className="card-body">
-              <div className="d-flex justify-content-between mb-3">
-                <h5 className="left-header text-primary">
-                  Course Category List
-                </h5>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={handleSearch}
-                  placeholder="Search"
-                  className="form-control search-input w-25"
-                />
-              </div>
-              {/* datatable */}
+
+        <div className="card3">
+          <div className="card-body">
+            <div className="d-flex justify-content-between mb-3">
+              <h5 className="left-header text-primary">Course Category List</h5>
+              <input
+                type="text"
+                value={search}
+                onChange={handleSearch}
+                placeholder="Search"
+                className="form-control search-input w-25"
+              />
+            </div>
+            {/* datatable */}
+            {dataToShow && dataToShow.length > 0 ? (
               <DataTable
                 columns={columns}
                 data={dataToShow || []}
@@ -304,16 +283,17 @@ const Coursecategory = () => {
                 className="responsive-table"
                 customStyles={customStyles}
               />
-            </div>
+            ) : (
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{ minHeight: "200px" }}
+              >
+                <p>No data available, create the task.</p>
+              </div>
+            )}
           </div>
-        ) : (
-          <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "200px" }}
-          >
-            <p>No data available, create the task.</p>
-          </div>
-        )}
+        </div>
+
         {/* modal */}
         {show && <div className="modal-backdrop fade show"></div>}
         <div

@@ -11,6 +11,7 @@ import UserLogin from './components/UserLogin/UserLogin';
 import Education from './components/Education/Education';
 import ProfilePage from './components/Profile/ProfilePage';
 import Faculty from './components/Faculty/Faculty';
+import PlayerSimple from './components/Player/PlayerSimple';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
       <Route path="/education" element={<Education/>}> </Route>
       <Route path="/profile" element={<ProfilePage/>}> </Route>
       <Route path="/faculty" element={<Faculty/>}> </Route>
+      <Route path="/player" element={<PlayerSimple/>}> </Route>
 
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
