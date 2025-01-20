@@ -258,7 +258,7 @@ const CourseSubcategory = () => {
         <div className="row mainbtn mb-0  align-items-center">
           <div className="col-auto d-flex align-items-center">
             <button className="btn btn-primary" onClick={handleShow}>
-              Create Sub_Category
+              Create SubCategory
             </button>
           </div>
         </div>
