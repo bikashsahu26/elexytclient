@@ -17,6 +17,7 @@ import {
   getCourseFeeById,
   getCourseSubCategory,
   getMaterialbyId,
+  getVideoContent,
   updateCourse,
   updateCourseContent,
   updateCourseFee,
@@ -51,6 +52,7 @@ const Course = () => {
     fetchMaterialById,
     getFee,
     fetchFeeById,
+    fetchVideo,
   } = useSelector((store) => store.course);
 
   const { allFaculty } = useSelector((store) => store.education);
@@ -113,6 +115,7 @@ const Course = () => {
       dispatch(getCourseSubCategory());
     }
   }, [dispatch, show]);
+
   useEffect(() => {
     if (fetchCourse) {
       const matchcategoryId = getAllCourseCatagory.find(
@@ -226,6 +229,28 @@ const Course = () => {
   // const selectedCourseData = getallCourse.find(
   //   (course) => course.courseName === selectedCourse
   // );
+  // const [categoryMap, setCategoryMap] = useState({});
+  // const [subCategoryMap, setSubCategoryMap] = useState({});
+
+  // useEffect(() => {
+  //   if (show) {
+  //     dispatch(getAllCourseCategory()).then((response) => {
+  //       const categoryMapping = response.reduce((acc, category) => {
+  //         acc[category.id] = category.category; // Map ID to Name
+  //         return acc;
+  //       }, {});
+  //       setCategoryMap(categoryMapping);
+  //     });
+
+  //     dispatch(getCourseSubCategory()).then((response) => {
+  //       const subCategoryMapping = response.reduce((acc, subCategory) => {
+  //         acc[subCategory.id] = subCategory.subCategory; // Map ID to Name
+  //         return acc;
+  //       }, {});
+  //       setSubCategoryMap(subCategoryMapping);
+  //     });
+  //   }
+  // }, [dispatch, show]);
 
   const handleCourseSubmit = (e) => {
     e.preventDefault();
@@ -266,14 +291,13 @@ const Course = () => {
         if (onEditing) {
           dispatch(updateCourse(fetchCourse.id, formData))
             .then(() => {
-              // const updatedCategoryName = categoryMap[updatedCourse.category]; // categoryMap should map category IDs to names
-              // const updatedSubCategoryName =
-              //   subCategoryMap[updatedCourse.subCategory]; // subCategoryMap should map subcategory IDs to names
-
               // const updatedCourseData = {
               //   ...updatedCourse,
-              //   category: updatedCategoryName, // Set the category name instead of the ID
-              //   subCategory: updatedSubCategoryName,
+              //   category:
+              //     categoryMap[updatedCourse.category] || updatedCourse.category,
+              //   subCategory:
+              //     subCategoryMap[updatedCourse.subCategory] ||
+              //     updatedCourse.subCategory,
               // };
               Swal.fire({
                 title: "Updated!",
@@ -289,10 +313,12 @@ const Course = () => {
                 handleResetThumbnailfield();
                 if (course.id === selectedCourseData?.id) {
                   setSelectedCourseData(course);
-                  // setSelectedCourseData(course);
-
                   setShowCard(true);
                 }
+                // if (updatedCourse.id === selectedCourseData?.id) {
+                //   setSelectedCourseData(updatedCourseData);
+                //   setShowCard(true);
+                // }
               });
             })
             .catch((error) => {
@@ -531,7 +557,10 @@ const Course = () => {
       ];
 
       if (validFileTypes.includes(file.type)) {
-        updatedContent[name] = file;
+        updatedContent.file = file; // Store the actual file object
+        updatedContent.contentFilename = file.name; // Set the file name to contentFilename
+        // updatedContent.contentFilename = courseContent.contentName || file.name;
+        updatedContent.contentType = file.type.split("/")[1]; // Set the file type (e.g., 'mp4')
       } else {
         alert(
           "Invalid file type! Please select a video file (MP4, MKV, AVCHD)."
@@ -539,13 +568,7 @@ const Course = () => {
         return;
       }
     } else if (name === "contentName") {
-      let trimmedValue = value.replace(/^\s+/, ""); // remove leading spaces
-      trimmedValue = trimmedValue.replace(/\s+$/, ""); // remove all trailing spaces
-
-      // one trailing space if the original value had one
-      if (value.endsWith(" ")) {
-        trimmedValue += " ";
-      }
+      let trimmedValue = value.trim();
       if (trimmedValue) {
         updatedContent[name] = trimmedValue;
       } else {
@@ -553,7 +576,6 @@ const Course = () => {
         return;
       }
     } else {
-      // For other fields, update normally
       updatedContent[name] = value;
     }
 
@@ -707,12 +729,41 @@ const Course = () => {
   //===================================vedio player===============================
   const [videoSource, setVideoSource] = useState(null);
   const [playVideo, setPlayVideo] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State to show/hide modal
 
-  const handleVideoClick = (videoPath) => {
-    setVideoSource(videoPath);
-    setPlayVideo(true);
-  };
+  // const handleVideoClick = (videoPath) => {
+  //   setVideoSource(videoPath);
+  //   setPlayVideo(true);
+  // };
   const videoRef = useRef(null);
+  // useEffect(() => {
+  //   if (fetchVideo) {
+  //     setVideoSource(fetchVideo);
+  //   }
+  // }, [fetchVideo]);
+
+  useEffect(() => {
+    if (playVideo && videoRef.current) {
+      videoRef.current.play(); // the video when playVideo state is true
+    }
+  }, [playVideo]);
+  const [contentName, setContentName] = useState(""); // Add this line to hold the content name
+
+  const handleVideoClick = (contentId, contentName) => {
+    setVideoSource(contentId); // Set the source URL or contentId
+    dispatch(getVideoContent(contentId)); //
+    setContentName(contentName); // Set the content name to display in the modal header
+    setPlayVideo(true); // video play
+    setShowModal(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    if (videoRef.current) {
+      videoRef.current.pause(true);
+    }
+    setShowModal(false);
+    setPlayVideo(false);
+  };
 
   // content fetch edit and to ply the vedio end
   // ================================material start===================================================
@@ -1327,8 +1378,15 @@ const Course = () => {
                           <td>{selectedCourseData.courseDesc}</td>
                           <td>{selectedCourseData.courseName}</td>
                           <td>{selectedCourseData.category}</td>
+                          {/* <td>
+                            {categoryMap[selectedCourseData.category] || "N/A"}
+                          </td> */}
                           <td>{selectedCourseData.creator}</td>
                           <td>{selectedCourseData.subCategory}</td>
+                          {/* <td>
+                            {subCategoryMap[selectedCourseData.subCategory] ||
+                              "N/A"}
+                          </td> */}
                         </tr>
                       ) : (
                         <tr>
@@ -1390,12 +1448,21 @@ const Course = () => {
                           <td>
                             <button
                               className="btn btn-warning"
-                              // onClick={() =>handleVideoClick(content.contentUploadPath)}
+                              // onClick={() =>
+                              //   handleVideoClick(content.contentUploadPath)
+                              // }
                               onClick={() =>
                                 handleVideoClick(
-                                  "./videos/Java - Comments ( 360 X 640 ).mp4"
+                                  content.id,
+                                  content.contentName
                                 )
                               }
+
+                              // onClick={() =>
+                              //   handleVideoClick(
+                              //     "./videos/Java - Comments ( 360 X 640 ).mp4"
+                              //   )
+                              // }
                             >
                               <SiAirplayvideo />{" "}
                             </button>
@@ -1413,13 +1480,65 @@ const Course = () => {
                     </tbody>
                   </table>
                   {/* ---------------------vedioplayer start--------------*/}
-                  {videoSource && (
+                  {/* {videoSource && (
                     <PlayerSimple
                       ref={videoRef}
-                      src={videoSource}
+                      //src={videoSource} //http://localhost:3737/courseContent/video/{id}
+                      src={`http://localhost:3737/courseContent/video/${videoSource}`}
                       playVideo={playVideo} // Pass the play state to the PlayerSimple
                     />
-                  )}
+                  )} */}
+                  <PlayerSimple src="http://localhost:3737/courseContent/video/955f7c84-2a48-479b-a6a5-498c7713b756"></PlayerSimple>
+                  <div
+                    className={`modal fade ${showModal ? "show" : ""}`}
+                    id="videoModal"
+                    tabIndex="-1"
+                    aria-labelledby="videoModalLabel"
+                    aria-hidden={!showModal}
+                    style={{ display: showModal ? "block" : "none" }}
+                  >
+                    <div className="modal-dialog modal-lg">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <h5 className="modal-title" id="videoModalLabel">
+                            {contentName}
+                          </h5>
+                          <button
+                            type="button"
+                            className="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                            onClick={handleCloseModal}
+                          ></button>
+                        </div>
+                        <div className="modal-body">
+                          {videoSource && (
+                            <PlayerSimple
+                              //ref={videoRef}
+                              src={`http://localhost:3737/courseContent/video/${videoSource}`}
+                              // playVideo={playVideo}
+                              // className="w-100"
+                              // controls
+                              // autoPlay
+                              // onEnded={handleCloseModal}
+                            >
+                              {/* <source src={videoSource} type="video/mp4" /> */}
+                              Your browser does not support the video tag.
+                            </PlayerSimple>
+                          )}
+                        </div>
+                        {/* <div className="modal-footer">
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={handleCloseModal}
+                          >
+                            Close
+                          </button>
+                        </div> */}
+                      </div>
+                    </div>
+                  </div>
                   {/*-------------------- vedioplayer end----------------*/}
                 </div>
                 {/* -------------------Course content card end --------*/}
@@ -1751,7 +1870,7 @@ const Course = () => {
                           <b>Upload File</b>
                         </label>
                         <input
-                          ref={contentInputRef || ""}
+                          ref={contentInputRef}
                           className="form-control"
                           type="file"
                           onChange={handleInputChangeContent}

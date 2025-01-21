@@ -17,6 +17,8 @@ import {
   GET_COURSE_SUB_CATAGORY,
   GET_COURSE_SUB_CATAGORY_EDIT,
   GET_COURSE_SUB_CATAGORY_UPDATE,
+  PLAY_VEDIO,
+  PLAY_VIDEO,
   UPDATE_COURSE,
   UPDATE_COURSE_BY_ID,
   UPDATE_COURSE_CONTENT,
@@ -50,6 +52,7 @@ const initialValue = {
   getFee: [],
   updateFee: [],
   fetchFeeById: [],
+  fetchVideo: [],
 };
 
 export const courseReducer = (store = initialValue, { type, payload }) => {
@@ -101,6 +104,8 @@ export const courseReducer = (store = initialValue, { type, payload }) => {
     return { ...store, updateFee: payload };
   } else if (type === GET_COURSE_FEE_BY_ID) {
     return { ...store, fetchFeeById: payload };
+  } else if (type === PLAY_VIDEO) {
+    return { ...store, fetchVideo: payload };
   }
   return store;
 };
