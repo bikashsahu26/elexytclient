@@ -17,7 +17,6 @@ import {
   getCourseFeeById,
   getCourseSubCategory,
   getMaterialbyId,
-  getVideoContent,
   updateCourse,
   updateCourseContent,
   updateCourseFee,
@@ -52,7 +51,6 @@ const Course = () => {
     fetchMaterialById,
     getFee,
     fetchFeeById,
-    fetchVideo,
   } = useSelector((store) => store.course);
 
   const { allFaculty } = useSelector((store) => store.education);
@@ -224,33 +222,6 @@ const Course = () => {
     //dispatch(getAllContent(courseDetails.id));
     setShowCard(true);
   };
-
-  // Filter the courses to show only the selected one
-  // const selectedCourseData = getallCourse.find(
-  //   (course) => course.courseName === selectedCourse
-  // );
-  // const [categoryMap, setCategoryMap] = useState({});
-  // const [subCategoryMap, setSubCategoryMap] = useState({});
-
-  // useEffect(() => {
-  //   if (show) {
-  //     dispatch(getAllCourseCategory()).then((response) => {
-  //       const categoryMapping = response.reduce((acc, category) => {
-  //         acc[category.id] = category.category; // Map ID to Name
-  //         return acc;
-  //       }, {});
-  //       setCategoryMap(categoryMapping);
-  //     });
-
-  //     dispatch(getCourseSubCategory()).then((response) => {
-  //       const subCategoryMapping = response.reduce((acc, subCategory) => {
-  //         acc[subCategory.id] = subCategory.subCategory; // Map ID to Name
-  //         return acc;
-  //       }, {});
-  //       setSubCategoryMap(subCategoryMapping);
-  //     });
-  //   }
-  // }, [dispatch, show]);
 
   const handleCourseSubmit = (e) => {
     e.preventDefault();
@@ -731,16 +702,7 @@ const Course = () => {
   const [playVideo, setPlayVideo] = useState(false);
   const [showModal, setShowModal] = useState(false); // State to show/hide modal
 
-  // const handleVideoClick = (videoPath) => {
-  //   setVideoSource(videoPath);
-  //   setPlayVideo(true);
-  // };
   const videoRef = useRef(null);
-  // useEffect(() => {
-  //   if (fetchVideo) {
-  //     setVideoSource(fetchVideo);
-  //   }
-  // }, [fetchVideo]);
 
   useEffect(() => {
     if (playVideo && videoRef.current) {
@@ -751,7 +713,6 @@ const Course = () => {
 
   const handleVideoClick = (contentId, contentName) => {
     setVideoSource(contentId); // Set the source URL or contentId
-    dispatch(getVideoContent(contentId)); //
     setContentName(contentName); // Set the content name to display in the modal header
     setPlayVideo(true); // video play
     setShowModal(true); // Open the modal
@@ -778,6 +739,10 @@ const Course = () => {
     documentType: "", // pdf, img
     file: null,
   });
+
+  const handleOpenPDF = () => {
+    window.open("./image/leph101.pdf", "_blank");
+  };
   // On open the meterial modal or when course is selected, it set courseId in state
   useEffect(() => {
     if (selectedCourseData) {
@@ -1448,21 +1413,12 @@ const Course = () => {
                           <td>
                             <button
                               className="btn btn-warning"
-                              // onClick={() =>
-                              //   handleVideoClick(content.contentUploadPath)
-                              // }
                               onClick={() =>
                                 handleVideoClick(
                                   content.id,
                                   content.contentName
                                 )
                               }
-
-                              // onClick={() =>
-                              //   handleVideoClick(
-                              //     "./videos/Java - Comments ( 360 X 640 ).mp4"
-                              //   )
-                              // }
                             >
                               <SiAirplayvideo />{" "}
                             </button>
@@ -1480,22 +1436,15 @@ const Course = () => {
                     </tbody>
                   </table>
                   {/* ---------------------vedioplayer start--------------*/}
-                  {/* {videoSource && (
-                    <PlayerSimple
-                      ref={videoRef}
-                      //src={videoSource} //http://localhost:3737/courseContent/video/{id}
-                      src={`http://localhost:3737/courseContent/video/${videoSource}`}
-                      playVideo={playVideo} // Pass the play state to the PlayerSimple
-                    />
-                  )} */}
-                  <PlayerSimple src="http://localhost:3737/courseContent/video/955f7c84-2a48-479b-a6a5-498c7713b756"></PlayerSimple>
                   <div
                     className={`modal fade ${showModal ? "show" : ""}`}
                     id="videoModal"
                     tabIndex="-1"
                     aria-labelledby="videoModalLabel"
-                    aria-hidden={!showModal}
+                    // aria-hidden={!showModal}
                     style={{ display: showModal ? "block" : "none" }}
+                    //inert={!showModal}
+                    {...(showModal ? {} : { inert: "true" })}
                   >
                     <div className="modal-dialog modal-lg">
                       <div className="modal-content">
@@ -1516,26 +1465,11 @@ const Course = () => {
                             <PlayerSimple
                               //ref={videoRef}
                               src={`http://localhost:3737/courseContent/video/${videoSource}`}
-                              // playVideo={playVideo}
-                              // className="w-100"
-                              // controls
-                              // autoPlay
-                              // onEnded={handleCloseModal}
                             >
-                              {/* <source src={videoSource} type="video/mp4" /> */}
                               Your browser does not support the video tag.
                             </PlayerSimple>
                           )}
                         </div>
-                        {/* <div className="modal-footer">
-                          <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={handleCloseModal}
-                          >
-                            Close
-                          </button>
-                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -1577,7 +1511,12 @@ const Course = () => {
                           <td>{material.documentType}</td>
                           <td>
                             {material.file}
-                            <FaFileAlt />
+                            <button
+                              className="btn btn-warning"
+                              onClick={handleOpenPDF}
+                            >
+                              <FaFileAlt />
+                            </button>{" "}
                           </td>
                           <td>
                             <button

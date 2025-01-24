@@ -18,7 +18,6 @@ import {
   GET_COURSE_SUB_CATAGORY,
   GET_COURSE_SUB_CATAGORY_EDIT,
   GET_COURSE_SUB_CATAGORY_UPDATE,
-  PLAY_VIDEO,
   UPDATE_COURSE,
   UPDATE_COURSE_BY_ID,
   UPDATE_COURSE_CONTENT,
@@ -516,32 +515,5 @@ export const updateCourseFee = (id, fees) => async (dispatch) => {
     }
   } catch (error) {
     throw error;
-  }
-};
-
-export const getVideoContent = (id) => async (dispatch) => {
-  try {
-    const res = await fetch(`${BASE_API_URL}/courseContent/video/${id}`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer`,
-      },
-    });
-
-    if (res.ok) {
-      const videoBlob = await res.blob();
-      // const videoBlob = await res.json();
-
-      const videoUrl = URL.createObjectURL(videoBlob);
-
-      dispatch({
-        type: PLAY_VIDEO,
-        payload: videoUrl, // Store the video URL to be used in the player
-      });
-    } else {
-      console.error("Error fetching video:", res.statusText);
-    }
-  } catch (error) {
-    console.error("Error:", error);
   }
 };

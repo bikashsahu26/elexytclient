@@ -22,4 +22,3 @@ export const ADD_COURSE_FEE = "ADD_COURSE_FEE"; //Fee
 export const GET_COURSE_FEE = "GET_COURSE_FEE";
 export const GET_COURSE_FEE_BY_ID = "GET_COURSE_FEE_BY_ID";
 export const UPDATE_COURSE_FEE = "UPDATE_COURSE_FEE";
-export const PLAY_VIDEO = "PLAY_VIDEO";
