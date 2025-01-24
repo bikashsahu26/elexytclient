@@ -31,6 +31,7 @@ import JoditEditor from "jodit-react";
 import { getAllFaculty } from "../../Redux/Auth/Action";
 import DataTable from "react-data-table-component";
 import PlayerSimple from "../Player/PlayerSimple";
+import { VIDEO_SERVER_URL } from "../../config/Api";
 
 const Course = () => {
   const dispatch = useDispatch();
@@ -193,8 +194,6 @@ const Course = () => {
         alert(`${name} cannot be empty.`);
         return;
       }
-
-      // setcourse({ ...course, [name]: trimmedValue });
     } else {
       setcourse({ ...course, [name]: value });
     }
@@ -219,7 +218,6 @@ const Course = () => {
     dispatch(fetchCoursebyId(course));
     setShow(true);
     setonEditing(true);
-    //dispatch(getAllContent(courseDetails.id));
     setShowCard(true);
   };
 
@@ -363,9 +361,6 @@ const Course = () => {
 
   // course based on category, subCategory, faculty, and search
   useEffect(() => {
-    // console.log("Filtering with:", { category, subCategory, faculty, search });
-    // console.log("getallCourse:", getallCourse);
-
     let filtered = getallCourse;
 
     if (category) {
@@ -978,8 +973,6 @@ const Course = () => {
   const [showFeeModal, setshowFeeModal] = useState(false);
   const [prevCourseId, setPrevCourseId] = useState(null);
 
-  // const feeExists = getFee && getFee.courseId === courseDetails?.id;
-
   const [courseFee, setCourseFee] = useState({
     courseFeeId: "",
     courseId: "",
@@ -1042,8 +1035,6 @@ const Course = () => {
   };
   const handleInputFeeChange = (e) => {
     const { name, value } = e.target;
-    // setCourseFee({ ...courseFee, [name]: value });
-
     setCourseFee((prevData) => ({
       ...prevData,
       [name]: value,
@@ -1115,10 +1106,6 @@ const Course = () => {
           setMaterialData(response);
         }
       });
-
-      // .catch((error) => {
-      //   console.error("Error  course :", error);
-      // });
     } else {
       setSelectedCourseData(null);
       setShowCard(false);
@@ -1441,9 +1428,7 @@ const Course = () => {
                     id="videoModal"
                     tabIndex="-1"
                     aria-labelledby="videoModalLabel"
-                    // aria-hidden={!showModal}
                     style={{ display: showModal ? "block" : "none" }}
-                    //inert={!showModal}
                     {...(showModal ? {} : { inert: "true" })}
                   >
                     <div className="modal-dialog modal-lg">
@@ -1463,8 +1448,7 @@ const Course = () => {
                         <div className="modal-body">
                           {videoSource && (
                             <PlayerSimple
-                              //ref={videoRef}
-                              src={`http://localhost:3737/courseContent/video/${videoSource}`}
+                              src={`${VIDEO_SERVER_URL}/courseContent/video/${videoSource}`}
                             >
                               Your browser does not support the video tag.
                             </PlayerSimple>

@@ -31,7 +31,6 @@ const Faculty = () => {
     profile: "",
     photo: null,
   });
-  // const { allFaculty, facultyById } = useSelector((store) => store.education);
 
   const { getAllEducation, allFaculty, facultyById } = useSelector(
     (store) => store.education

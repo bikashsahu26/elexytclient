@@ -38,7 +38,6 @@ transition: top 0.3s ease-in-out;  /* Smooth transition when it becomes sticky *
 .contentTbl {
 background-color: #007bff;
 color: white;
-/*font-weight: bold;  */
 text-align: left; 
 }
 

@@ -7,11 +7,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="nav-left">
         <a href="/course">
-          {/* <FaHome /> */}
-          <h4
-            className="ps-3 logo-e"
-            //  onClick={handleLogoClick}
-          >
+          <h4 className="ps-3 logo-e">
             <span className="custom-e">E</span>
             <span className="custom-letter">lexyt</span>
           </h4>

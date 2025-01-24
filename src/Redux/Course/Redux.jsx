@@ -50,7 +50,6 @@ const initialValue = {
   getFee: [],
   updateFee: [],
   fetchFeeById: [],
-  fetchVideo: [],
 };
 
 export const courseReducer = (store = initialValue, { type, payload }) => {

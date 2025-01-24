@@ -38,12 +38,6 @@ const Coursecategory = () => {
     category: "",
     categoryDesc: "",
   });
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   if (/^[a-zA-Z\s]*$/.test(value)) {
-  //     setcourseCategory({ ...courseCategory, [name]: value });
-  //   }
-  // };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -186,12 +180,6 @@ const Coursecategory = () => {
     setonEditing(true);
   };
   const columns = [
-    // {
-    //   name: "Sn",
-    //   selector: (row, index) => (currentPage - 1) * rowsPerPage + index + 1,
-    //   sortable: false,
-    //   width: "60px",
-    // },
     {
       name: "Category",
       selector: (row) => row.category,
