@@ -195,10 +195,8 @@ export const addCourse = (data) => async (dispatch) => {
     const res = await fetch(`${BASE_API_URL}/course`, {
       method: "POST",
       headers: {
-        // "Content-Type": "application/json",
         Authorization: `Bearer`,
       },
-      // body: JSON.stringify(data),
       body: data,
     });
     const resData = await res.json();
@@ -250,10 +248,8 @@ export const updateCourse = (id, course) => async (dispatch) => {
     const res = await fetch(`${BASE_API_URL}/course/${id}`, {
       method: "PUT",
       headers: {
-        // "Content-Type": "application/json",
         Authorization: `Bearer`,
       },
-      //body: JSON.stringify(course),
       body: course,
     });
     const resData = await res.json();
@@ -278,7 +274,6 @@ export const addCourseContent = (formData) => async (dispatch) => {
     const res = await fetch(`${BASE_API_URL}/courseContent`, {
       method: "POST",
       headers: {
-        // "Content-Type": "application/json",
         Authorization: `Bearer`,
       },
       body: formData,
@@ -361,7 +356,6 @@ export const addCourseMaterial = (formData) => async (dispatch) => {
     const res = await fetch(`${BASE_API_URL}/courseDocument`, {
       method: "POST",
       headers: {
-        // "Content-Type": "application/json",
         Authorization: `Bearer`,
       },
       body: formData,

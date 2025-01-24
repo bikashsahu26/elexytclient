@@ -54,12 +54,6 @@ const Education = () => {
     }
   };
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   if (/^[a-zA-Z\s]*$/.test(value)) {
-  //     setuserEducation({ ...userEducation, [name]: value });
-  //   }
-  // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 

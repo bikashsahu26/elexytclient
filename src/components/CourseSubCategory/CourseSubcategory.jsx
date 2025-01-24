@@ -15,7 +15,6 @@ import Navbar from "../Navbar/Navbar";
 import Swal from "sweetalert2";
 
 const CourseSubcategory = () => {
-  //   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,14 +61,6 @@ const CourseSubcategory = () => {
     }
   };
 
-  // const handleSubInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setcourseSubCategory({ ...courseSubCategory, [name]: value });
-
-  //   // if (/^[a-zA-Z\s]*$/.test(value)) {
-  //   //   setcourseSubCategory({ ...courseSubCategory, [name]: value });
-  //   // }
-  // };
   const handleSubInputChange = (e) => {
     const { name, value } = e.target;
 

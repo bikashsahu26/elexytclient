@@ -31,6 +31,7 @@ import JoditEditor from "jodit-react";
 import { getAllFaculty } from "../../Redux/Auth/Action";
 import DataTable from "react-data-table-component";
 import PlayerSimple from "../Player/PlayerSimple";
+import { BASE_API_URL } from "../../config/Api";
 
 const Course = () => {
   const dispatch = useDispatch();
@@ -113,6 +114,7 @@ const Course = () => {
       dispatch(getCourseSubCategory());
     }
   }, [dispatch, show]);
+
   useEffect(() => {
     if (fetchCourse) {
       const matchcategoryId = getAllCourseCatagory.find(
@@ -192,8 +194,6 @@ const Course = () => {
         alert(`${name} cannot be empty.`);
         return;
       }
-
-      // setcourse({ ...course, [name]: trimmedValue });
     } else {
       setcourse({ ...course, [name]: value });
     }
@@ -218,14 +218,8 @@ const Course = () => {
     dispatch(fetchCoursebyId(course));
     setShow(true);
     setonEditing(true);
-    //dispatch(getAllContent(courseDetails.id));
     setShowCard(true);
   };
-
-  // Filter the courses to show only the selected one
-  // const selectedCourseData = getallCourse.find(
-  //   (course) => course.courseName === selectedCourse
-  // );
 
   const handleCourseSubmit = (e) => {
     e.preventDefault();
@@ -266,15 +260,6 @@ const Course = () => {
         if (onEditing) {
           dispatch(updateCourse(fetchCourse.id, formData))
             .then(() => {
-              // const updatedCategoryName = categoryMap[updatedCourse.category]; // categoryMap should map category IDs to names
-              // const updatedSubCategoryName =
-              //   subCategoryMap[updatedCourse.subCategory]; // subCategoryMap should map subcategory IDs to names
-
-              // const updatedCourseData = {
-              //   ...updatedCourse,
-              //   category: updatedCategoryName, // Set the category name instead of the ID
-              //   subCategory: updatedSubCategoryName,
-              // };
               Swal.fire({
                 title: "Updated!",
                 text: successMessage,
@@ -289,8 +274,6 @@ const Course = () => {
                 handleResetThumbnailfield();
                 if (course.id === selectedCourseData?.id) {
                   setSelectedCourseData(course);
-                  // setSelectedCourseData(course);
-
                   setShowCard(true);
                 }
               });
@@ -366,9 +349,6 @@ const Course = () => {
 
   // course based on category, subCategory, faculty, and search
   useEffect(() => {
-    // console.log("Filtering with:", { category, subCategory, faculty, search });
-    // console.log("getallCourse:", getallCourse);
-
     let filtered = getallCourse;
 
     if (category) {
@@ -531,7 +511,9 @@ const Course = () => {
       ];
 
       if (validFileTypes.includes(file.type)) {
-        updatedContent[name] = file;
+        updatedContent.file = file; // Store the actual file object
+        updatedContent.contentFilename = file.name; // Set the file name to contentFilename
+        updatedContent.contentType = file.type.split("/")[1]; // Set the file type (e.g., 'mp4')
       } else {
         alert(
           "Invalid file type! Please select a video file (MP4, MKV, AVCHD)."
@@ -539,13 +521,7 @@ const Course = () => {
         return;
       }
     } else if (name === "contentName") {
-      let trimmedValue = value.replace(/^\s+/, ""); // remove leading spaces
-      trimmedValue = trimmedValue.replace(/\s+$/, ""); // remove all trailing spaces
-
-      // one trailing space if the original value had one
-      if (value.endsWith(" ")) {
-        trimmedValue += " ";
-      }
+      let trimmedValue = value.trim();
       if (trimmedValue) {
         updatedContent[name] = trimmedValue;
       } else {
@@ -553,7 +529,6 @@ const Course = () => {
         return;
       }
     } else {
-      // For other fields, update normally
       updatedContent[name] = value;
     }
 
@@ -707,12 +682,31 @@ const Course = () => {
   //===================================vedio player===============================
   const [videoSource, setVideoSource] = useState(null);
   const [playVideo, setPlayVideo] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State to show/hide modal
 
-  const handleVideoClick = (videoPath) => {
-    setVideoSource(videoPath);
-    setPlayVideo(true);
-  };
   const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (playVideo && videoRef.current) {
+      videoRef.current.play(); // the video when playVideo state is true
+    }
+  }, [playVideo]);
+  const [contentName, setContentName] = useState(""); // Add this line to hold the content name
+
+  const handleVideoClick = (contentId, contentName) => {
+    setVideoSource(contentId); // Set the source URL or contentId
+    setContentName(contentName); // Set the content name to display in the modal header
+    setPlayVideo(true); // video play
+    setShowModal(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    if (videoRef.current) {
+      videoRef.current.pause(true);
+    }
+    setShowModal(false);
+    setPlayVideo(false);
+  };
 
   // content fetch edit and to ply the vedio end
   // ================================material start===================================================
@@ -727,6 +721,10 @@ const Course = () => {
     documentType: "", // pdf, img
     file: null,
   });
+
+  const handleOpenPDF = () => {
+    window.open("./image/leph101.pdf", "_blank");
+  };
   // On open the meterial modal or when course is selected, it set courseId in state
   useEffect(() => {
     if (selectedCourseData) {
@@ -962,8 +960,6 @@ const Course = () => {
   const [showFeeModal, setshowFeeModal] = useState(false);
   const [prevCourseId, setPrevCourseId] = useState(null);
 
-  // const feeExists = getFee && getFee.courseId === courseDetails?.id;
-
   const [courseFee, setCourseFee] = useState({
     courseFeeId: "",
     courseId: "",
@@ -1026,8 +1022,6 @@ const Course = () => {
   };
   const handleInputFeeChange = (e) => {
     const { name, value } = e.target;
-    // setCourseFee({ ...courseFee, [name]: value });
-
     setCourseFee((prevData) => ({
       ...prevData,
       [name]: value,
@@ -1099,10 +1093,6 @@ const Course = () => {
           setMaterialData(response);
         }
       });
-
-      // .catch((error) => {
-      //   console.error("Error  course :", error);
-      // });
     } else {
       setSelectedCourseData(null);
       setShowCard(false);
@@ -1390,10 +1380,10 @@ const Course = () => {
                           <td>
                             <button
                               className="btn btn-warning"
-                              // onClick={() =>handleVideoClick(content.contentUploadPath)}
                               onClick={() =>
                                 handleVideoClick(
-                                  "./videos/Java - Comments ( 360 X 640 ).mp4"
+                                  content.id,
+                                  content.contentName
                                 )
                               }
                             >
@@ -1413,13 +1403,40 @@ const Course = () => {
                     </tbody>
                   </table>
                   {/* ---------------------vedioplayer start--------------*/}
-                  {videoSource && (
-                    <PlayerSimple
-                      ref={videoRef}
-                      src={videoSource}
-                      playVideo={playVideo} // Pass the play state to the PlayerSimple
-                    />
-                  )}
+                  <div
+                    className={`modal fade ${showModal ? "show" : ""}`}
+                    id="videoModal"
+                    tabIndex="-1"
+                    aria-labelledby="videoModalLabel"
+                    style={{ display: showModal ? "block" : "none" }}
+                    {...(showModal ? {} : { inert: "true" })}
+                  >
+                    <div className="modal-dialog modal-lg">
+                      <div className="modal-content">
+                        <div className="modal-header">
+                          <h5 className="modal-title" id="videoModalLabel">
+                            {contentName}
+                          </h5>
+                          <button
+                            type="button"
+                            className="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                            onClick={handleCloseModal}
+                          ></button>
+                        </div>
+                        <div className="modal-body">
+                          {videoSource && (
+                            <PlayerSimple
+                              src={`${BASE_API_URL}/courseContent/video/${videoSource}`}
+                            >
+                              Your browser does not support the video tag.
+                            </PlayerSimple>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   {/*-------------------- vedioplayer end----------------*/}
                 </div>
                 {/* -------------------Course content card end --------*/}
@@ -1444,7 +1461,6 @@ const Course = () => {
                   <table className="table table-hover">
                     <thead className="table-primary">
                       <tr>
-                        {/* <th>Course</th> */}
                         <th>Document Name</th>
                         <th>Document Type</th>
                         <th>File</th>
@@ -1458,7 +1474,12 @@ const Course = () => {
                           <td>{material.documentType}</td>
                           <td>
                             {material.file}
-                            <FaFileAlt />
+                            <button
+                              className="btn btn-warning"
+                              onClick={handleOpenPDF}
+                            >
+                              <FaFileAlt />
+                            </button>{" "}
                           </td>
                           <td>
                             <button
@@ -1484,14 +1505,6 @@ const Course = () => {
                   {" "}
                   <div className="row g-3 justify-content-end">
                     <div className="col-md-2 d-flex justify-content-end">
-                      {/* {selectedCourseData && !getFee && (
-                        <button
-                          className="btn btn-primary text-white btn-sm"
-                          onClick={handleFeeModalShow}
-                        >
-                          Add Fees
-                        </button>
-                      )} */}
                       {!getFee || getFee.courseId !== selectedCourseData?.id ? (
                         <button
                           className="btn btn-primary text-white btn-sm"
@@ -1751,7 +1764,7 @@ const Course = () => {
                           <b>Upload File</b>
                         </label>
                         <input
-                          ref={contentInputRef || ""}
+                          ref={contentInputRef}
                           className="form-control"
                           type="file"
                           onChange={handleInputChangeContent}
@@ -1905,7 +1918,6 @@ const Course = () => {
                         accept="image/jpeg, image/png , image/jpg, image/gif, image/webp"
                         name="thumbnail"
                         id="thumbnail"
-                        // value={course.thumbnail || ""}
                         onChange={handleInputChange}
                         required
                       />
@@ -1963,14 +1975,6 @@ const Course = () => {
                         }
                         ref={editor}
                         config={config}
-                        // config={{
-                        //   showCharsCounter: false, // Hides the characters counter
-                        //   showWordsCounter: false, // Hides the word counter
-                        //   showPoweredBy: false, // Hides the "Powered by Jodit" footer
-                        //   statusbar: false, // Hides the entire status bar
-                        //   toolbar: true, // Keep toolbar visible
-                        //   readonly: false,
-                        // }}
                       />
                     </div>
                   </div>
@@ -2038,7 +2042,6 @@ const Course = () => {
                         required
                       />
                     </div>
-                    {/* <div className="row g-3"> */}
                     <div className="col-md-4">
                       <label htmlFor="documentType" className="form-label">
                         <b>Type</b>
@@ -2047,7 +2050,6 @@ const Course = () => {
                         name="documentType"
                         value={courseDocument.documentType || ""}
                         onChange={handleDocumentTypeChange}
-                        //  onChange={handleMaterialChange}
                         id="documentType"
                         className="form-select"
                         required
@@ -2071,10 +2073,7 @@ const Course = () => {
                         className="form-control"
                         type="file"
                         ref={fileInputRef}
-                        // value={courseDocument.file || ""}
                         onChange={handleMaterialChange}
-                        // onChange={handleDocumentTypeChange}
-                        // accept=".pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .pptx"
                         accept={getFileAcceptType(courseDocument.documentType)} // dynamically set file accept based on document type
                         name="file"
                         id="file"
