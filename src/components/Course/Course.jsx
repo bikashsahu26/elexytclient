@@ -31,7 +31,7 @@ import JoditEditor from "jodit-react";
 import { getAllFaculty } from "../../Redux/Auth/Action";
 import DataTable from "react-data-table-component";
 import PlayerSimple from "../Player/PlayerSimple";
-import { VIDEO_SERVER_URL } from "../../config/Api";
+import { BASE_API_URL } from "../../config/Api";
 
 const Course = () => {
   const dispatch = useDispatch();
@@ -260,14 +260,6 @@ const Course = () => {
         if (onEditing) {
           dispatch(updateCourse(fetchCourse.id, formData))
             .then(() => {
-              // const updatedCourseData = {
-              //   ...updatedCourse,
-              //   category:
-              //     categoryMap[updatedCourse.category] || updatedCourse.category,
-              //   subCategory:
-              //     subCategoryMap[updatedCourse.subCategory] ||
-              //     updatedCourse.subCategory,
-              // };
               Swal.fire({
                 title: "Updated!",
                 text: successMessage,
@@ -284,10 +276,6 @@ const Course = () => {
                   setSelectedCourseData(course);
                   setShowCard(true);
                 }
-                // if (updatedCourse.id === selectedCourseData?.id) {
-                //   setSelectedCourseData(updatedCourseData);
-                //   setShowCard(true);
-                // }
               });
             })
             .catch((error) => {
@@ -525,7 +513,6 @@ const Course = () => {
       if (validFileTypes.includes(file.type)) {
         updatedContent.file = file; // Store the actual file object
         updatedContent.contentFilename = file.name; // Set the file name to contentFilename
-        // updatedContent.contentFilename = courseContent.contentName || file.name;
         updatedContent.contentType = file.type.split("/")[1]; // Set the file type (e.g., 'mp4')
       } else {
         alert(
@@ -1330,15 +1317,8 @@ const Course = () => {
                           <td>{selectedCourseData.courseDesc}</td>
                           <td>{selectedCourseData.courseName}</td>
                           <td>{selectedCourseData.category}</td>
-                          {/* <td>
-                            {categoryMap[selectedCourseData.category] || "N/A"}
-                          </td> */}
                           <td>{selectedCourseData.creator}</td>
                           <td>{selectedCourseData.subCategory}</td>
-                          {/* <td>
-                            {subCategoryMap[selectedCourseData.subCategory] ||
-                              "N/A"}
-                          </td> */}
                         </tr>
                       ) : (
                         <tr>
@@ -1448,7 +1428,7 @@ const Course = () => {
                         <div className="modal-body">
                           {videoSource && (
                             <PlayerSimple
-                              src={`${VIDEO_SERVER_URL}/courseContent/video/${videoSource}`}
+                              src={`${BASE_API_URL}/courseContent/video/${videoSource}`}
                             >
                               Your browser does not support the video tag.
                             </PlayerSimple>
@@ -1481,7 +1461,6 @@ const Course = () => {
                   <table className="table table-hover">
                     <thead className="table-primary">
                       <tr>
-                        {/* <th>Course</th> */}
                         <th>Document Name</th>
                         <th>Document Type</th>
                         <th>File</th>
@@ -1526,14 +1505,6 @@ const Course = () => {
                   {" "}
                   <div className="row g-3 justify-content-end">
                     <div className="col-md-2 d-flex justify-content-end">
-                      {/* {selectedCourseData && !getFee && (
-                        <button
-                          className="btn btn-primary text-white btn-sm"
-                          onClick={handleFeeModalShow}
-                        >
-                          Add Fees
-                        </button>
-                      )} */}
                       {!getFee || getFee.courseId !== selectedCourseData?.id ? (
                         <button
                           className="btn btn-primary text-white btn-sm"
@@ -1947,7 +1918,6 @@ const Course = () => {
                         accept="image/jpeg, image/png , image/jpg, image/gif, image/webp"
                         name="thumbnail"
                         id="thumbnail"
-                        // value={course.thumbnail || ""}
                         onChange={handleInputChange}
                         required
                       />
@@ -2005,14 +1975,6 @@ const Course = () => {
                         }
                         ref={editor}
                         config={config}
-                        // config={{
-                        //   showCharsCounter: false, // Hides the characters counter
-                        //   showWordsCounter: false, // Hides the word counter
-                        //   showPoweredBy: false, // Hides the "Powered by Jodit" footer
-                        //   statusbar: false, // Hides the entire status bar
-                        //   toolbar: true, // Keep toolbar visible
-                        //   readonly: false,
-                        // }}
                       />
                     </div>
                   </div>
@@ -2080,7 +2042,6 @@ const Course = () => {
                         required
                       />
                     </div>
-                    {/* <div className="row g-3"> */}
                     <div className="col-md-4">
                       <label htmlFor="documentType" className="form-label">
                         <b>Type</b>
@@ -2089,7 +2050,6 @@ const Course = () => {
                         name="documentType"
                         value={courseDocument.documentType || ""}
                         onChange={handleDocumentTypeChange}
-                        //  onChange={handleMaterialChange}
                         id="documentType"
                         className="form-select"
                         required
@@ -2113,10 +2073,7 @@ const Course = () => {
                         className="form-control"
                         type="file"
                         ref={fileInputRef}
-                        // value={courseDocument.file || ""}
                         onChange={handleMaterialChange}
-                        // onChange={handleDocumentTypeChange}
-                        // accept=".pdf, .xls, .xlsx, .doc, .docx, .txt, .ppt, .pptx"
                         accept={getFileAcceptType(courseDocument.documentType)} // dynamically set file accept based on document type
                         name="file"
                         id="file"

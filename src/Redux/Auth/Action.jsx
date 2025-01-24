@@ -95,11 +95,9 @@ export const addFaculty = (data) => async (dispatch) => {
     const res = await fetch(`${BASE_API_URL_AUTH}/faculty`, {
       method: "POST",
       headers: {
-        // "Content-Type": "application/json",
         Authorization: `Bearer`,
       },
       body: data,
-      // body: JSON.stringify(data),
     });
     const resData = await res.json();
 

@@ -85,12 +85,10 @@ const Footer = () => {
         <span className="text-body">
           <div class="text-center bg-dark text-white mt-4 p-1">
             <p class="mb-0 fw-bold">
-              {/* <a href="/#" className="border-bottom text-white"> */}
               <p>
                 &copy; 2024 Designed By: Elexyt Technologies Pvt.Ltd.| All
                 rights reserved
               </p>
-              {/* </a>{" "} */}
             </p>
           </div>
         </span>
